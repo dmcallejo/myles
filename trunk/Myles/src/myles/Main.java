@@ -24,8 +24,11 @@ public class Main {
         catch(java.net.MalformedURLException e){
             System.out.println("MalformedURLException");
         }
+        catch(java.io.IOException e){
+            System.out.println("Excepción I/O");
+        }
         catch(java.lang.Exception e){
-            System.out.println("Excepcion");
+            System.out.println(e);
         }
 
     }

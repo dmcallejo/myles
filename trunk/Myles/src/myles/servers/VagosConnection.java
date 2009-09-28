@@ -2,13 +2,12 @@ package myles.servers;
 
 import myles.utils.MD5;
 import myles.utils.HttpUtils;
-import myles.search.Search;
 import java.util.*;
 import java.io.*;
 import java.net.*;
 
 
-public class VagosConnection implements Connection {
+public class VagosConnection implements ServerConnection {
     private int server_id = 1;
     private String vagos_user;
     private String vagos_password;
@@ -113,7 +112,7 @@ public class VagosConnection implements Connection {
      * Permite cerrar la sesión.
      * @return éxito.
      */
-    public boolean disConnect() throws Exception{
+    public boolean disConnect() throws java.io.IOException, java.net.MalformedURLException{
         // Construimos objeto HTTPUrl con la dirección del logout + bbsessionhash
         URL vagos_logout_url = new URL("http://vagos.wamba.com/login.php?do=logout&logouthash="+this.bbsessionhash);
         HttpURLConnection vagos_conn = (HttpURLConnection)vagos_logout_url.openConnection();
@@ -202,9 +201,7 @@ public class VagosConnection implements Connection {
      * @param search_query texto a buscar.
      * @return una búsqueda Search.
      */
-    public Search search(String search_query){
-        return new Search();
-    }
+     // A poner luego
     /**
      * 
      * @return
