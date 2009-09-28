@@ -29,10 +29,14 @@ public class VagosConnection implements ServerConnection {
         this.vagos_password = vagos_password;
     }
 
+
     public boolean Connect() throws Exception{
 
         // Obtenemos la Session Id de vBulletin
         String PHPSESSID = VagosConnection.GetPhpSessID();
+        if (PHPSESSID==null) {
+            throw new Exception("PHPSESSID no valido");
+        }
 
         // Construimos objeto HTTPUrl...
         URL vagos_login_url = new URL("http://vagos.wamba.com/login.php?do=login");
