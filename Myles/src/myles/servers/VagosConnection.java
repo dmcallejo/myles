@@ -44,7 +44,7 @@ public class VagosConnection implements ServerConnection {
         // Headers
         vagos_conn = HttpUtils.setHeaders("vagos.wamba.com", vagos_conn);
         vagos_conn.setRequestProperty("Cookie", "PHPSESSID="+PHPSESSID);
-
+        
         // Seteamos métodos
         vagos_conn.setRequestMethod("POST");
 
@@ -158,6 +158,7 @@ public class VagosConnection implements ServerConnection {
 
         // Seteamos método
         vagos_conn.setRequestMethod("GET");
+        System.out.println("\tGET");
         Map<String,List<String>> vagos_headers = vagos_conn.getHeaderFields();
         Collection<List<String>> vagos_l_headers = vagos_headers.values();
         Set<String> vagos_keys = vagos_headers.keySet();
@@ -176,9 +177,10 @@ public class VagosConnection implements ServerConnection {
             values[i] = anObject.toString();
             i++;
         }
-
+        System.out.println("\tCookies");
         String[] cookies_rdy = null;
         for(i = 0; i < keys.length; i++){
+            System.out.println("\tfor "+i+" = "+keys[i]);
             if(keys[i] != null){
                 if(keys[i].startsWith("Set-Cookie")){
                     String cookies_raw = values[i];
