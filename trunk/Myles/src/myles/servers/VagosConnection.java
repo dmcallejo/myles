@@ -34,6 +34,7 @@ public class VagosConnection implements ServerConnection {
 
         // Obtenemos la Session Id de vBulletin
         String PHPSESSID = VagosConnection.GetPhpSessID();
+        System.out.println(PHPSESSID);
         if (PHPSESSID==null) {
             throw new Exception("PHPSESSID no valido");
         }
@@ -181,16 +182,25 @@ public class VagosConnection implements ServerConnection {
             values[i] = anObject.toString();
             i++;
         }
-        System.out.println("\tCookies");
+        /*
+         * Debug de las cookies
+         */
+        System.out.println("\t-Cookies:");
         String[] cookies_rdy = null;
+        for (i=0;i<keys.length;i++){
+            System.out.println("\t"+i+keys[i]+values[i]);
+        }
+        /*
+         * Fin.
+         */
         for(i = 0; i < keys.length; i++){
-            System.out.println("\tfor "+i+" = "+keys[i]);
             if(keys[i] != null){
                 if(keys[i].startsWith("Set-Cookie")){
                     String cookies_raw = values[i];
                     cookies_raw = cookies_raw.replace("[", "");
                     cookies_raw = cookies_raw.replace("]", "");
-                    cookies_raw = cookies_raw.split("PHPSESSID=")[1];
+                    cookies_raw = cookies_raw.split("PHPSESSID=")[1];       //Esta linea da el ArrayIndexOutOfBounds
+                    System.out.println(cookies_raw);                        //La cookie no manda PHPSESSID
                     return cookies_raw.split(";")[0];
                 }
             }
