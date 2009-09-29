@@ -4,6 +4,7 @@
  */
 package myles;
 
+import java.security.NoSuchAlgorithmException;
 import myles.servers.*;
 
 /**
@@ -15,7 +16,7 @@ public class Main {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws NoSuchAlgorithmException {
         System.out.println("Conexión...");
         VagosConnection vagos1 = new VagosConnection("ju4nk4r", "ninguna");
         try {
@@ -24,16 +25,10 @@ public class Main {
         } catch (java.net.MalformedURLException e) {
             System.out.println("MalformedURLException");
         } catch (java.io.IOException e) {
-            System.out.println("Excepción I/O");
-        } catch (java.lang.Exception e) {
-            System.out.println(e);
-        } finally {
-            try {
-                vagos1.disConnect();
-            } catch (java.io.IOException e) {
-            }
-
+            System.out.println(e.getLocalizedMessage());
         }
-
+        catch (java.lang.Exception e) {
+            System.out.println(e);
+        }
     }
 }
