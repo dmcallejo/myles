@@ -1,12 +1,18 @@
 package myles.utils;
 
-import java.net.HttpURLConnection;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.net.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 /**
  *
  * @author User
  */
 public class HttpUtils {
-
     public static HttpURLConnection setHeaders(String host, HttpURLConnection conn){
         conn.addRequestProperty("Accept", "text/html");
         conn.addRequestProperty("Accept-Language", "es-es,es;q=0.8,en-us;q=0.5,en;q=0.3");
@@ -17,6 +23,44 @@ public class HttpUtils {
         conn.addRequestProperty("Connection", "keep-alive");
         conn.addRequestProperty("Host", host);
         return conn;
+    }
+    public static String getPage(String desiredURL, LinkedList<String> cookies, String host){
+        try {
+            URL vagos_login_url = new URL(desiredURL);
+            try {
+                HttpURLConnection NetObj = (HttpURLConnection) vagos_login_url.openConnection();
+                NetObj.setDoOutput(true);
+                NetObj = HttpUtils.setHeaders(host, NetObj);
+                NetObj.setRequestMethod("POST");
+                if(cookies != null){
+                    Iterator<String> cookie_iterator = cookies.iterator();
+                    while (cookie_iterator.hasNext()){
+                        NetObj.addRequestProperty("Cookie", cookie_iterator.next());
+                    }
+                }
+                BufferedReader page_o = new BufferedReader(new InputStreamReader(NetObj.getInputStream()));
+                String page_html = "";
+                String aux;
+                while(true){
+                    aux = page_o.readLine();
+                    if(aux!=null){
+                        page_html += page_o.readLine()+"\n";
+                    }else{
+                        break;
+                    }
+            }
+                return page_html;
+
+            } catch (IOException ex) {
+                Logger.getLogger(HttpUtils.class.getName()).log(Level.SEVERE, null, ex);
+                return "";
+            }
+
+
+        } catch (MalformedURLException ex) {
+            Logger.getLogger(HttpUtils.class.getName()).log(Level.SEVERE, null, ex);
+            return "";
+        }
     }
 
 }
