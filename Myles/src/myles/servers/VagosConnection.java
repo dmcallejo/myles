@@ -33,10 +33,10 @@ public class VagosConnection implements ServerConnection {
     public boolean Connect() throws Exception{
 
         // Obtenemos la Session Id de vBulletin
-        String PHPSESSID = VagosConnection.GetPhpSessID();
-        System.out.println(PHPSESSID);
-        if (PHPSESSID==null) {
-            throw new Exception("PHPSESSID no valido");
+        String bbsessionhash = VagosConnection.GetPhpSessID();
+        System.out.println(bbsessionhash);
+        if (bbsessionhash==null) {
+            throw new Exception("bbsessionhash no valido");
         }
 
         // Construimos objeto HTTPUrl...
@@ -48,7 +48,7 @@ public class VagosConnection implements ServerConnection {
 
         // Headers
         vagos_conn = HttpUtils.setHeaders("vagos.wamba.com", vagos_conn);
-        vagos_conn.setRequestProperty("Cookie", "PHPSESSID="+PHPSESSID);
+        vagos_conn.setRequestProperty("Cookie", "bbsessionhash="+bbsessionhash);
         
         // Seteamos métodos
         vagos_conn.setRequestMethod("POST");
@@ -199,7 +199,7 @@ public class VagosConnection implements ServerConnection {
                     String cookies_raw = values[i];
                     cookies_raw = cookies_raw.replace("[", "");
                     cookies_raw = cookies_raw.replace("]", "");
-                    cookies_raw = cookies_raw.split("PHPSESSID=")[1];       //Esta linea da el ArrayIndexOutOfBounds
+                    cookies_raw = cookies_raw.split("bbsessionhash=")[1];       //Esta linea da el ArrayIndexOutOfBounds
                     System.out.println(cookies_raw);                        //La cookie no manda PHPSESSID
                     return cookies_raw.split(";")[0];
                 }
