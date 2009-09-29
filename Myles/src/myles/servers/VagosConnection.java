@@ -95,9 +95,8 @@ public class VagosConnection implements ServerConnection {
             cur_cookie=it.next();
             if(cur_cookie.contains("bbsessionhash")){
                 bbsh = cur_cookie.split(";")[0].split("=")[1];
-            }else{
-                return false;
             }
+
        }
 
         return true;
