@@ -1,10 +1,12 @@
 package myles.servers;
 
+import java.security.NoSuchAlgorithmException;
 import myles.utils.MD5;
 import myles.utils.HttpUtils;
 import java.util.*;
 import java.io.*;
 import java.net.*;
+import myles.exceptions.InvalidSessionException;
 
 
 public class VagosConnection implements ServerConnection {
@@ -12,7 +14,7 @@ public class VagosConnection implements ServerConnection {
     private String vagos_user;
     private String vagos_password;
     private LinkedList<String> vagos_cookies;
-    private String bbsessionhash;   //Almacena el hash de la sesion para poder cerrarla.
+    private String bbsh;
 
     /**
      * ------------------------------------------------------------
@@ -29,38 +31,26 @@ public class VagosConnection implements ServerConnection {
         this.vagos_password = vagos_password;
     }
 
+    public boolean Connect() throws MalformedURLException, IOException, NoSuchAlgorithmException{
 
-    public boolean Connect() throws Exception{
-
-        // Obtenemos la Session Id de vBulletin
-        String bbsessionhash = VagosConnection.GetPhpSessID();
-        System.out.println(bbsessionhash);
-        if (bbsessionhash==null) {
-            throw new Exception("bbsessionhash no valido");
-        }
-
-        // Construimos objeto HTTPUrl...
+        // Construimos objeto HTTPUrlConnection con la página de Login
         URL vagos_login_url = new URL("http://vagos.wamba.com/login.php?do=login");
-
         HttpURLConnection vagos_conn = (HttpURLConnection)vagos_login_url.openConnection();
 
         vagos_conn.setDoOutput(true);
 
         // Headers
-        vagos_conn = HttpUtils.setHeaders("vagos.wamba.com", vagos_conn);
-        vagos_conn.setRequestProperty("Cookie", "bbsessionhash="+bbsessionhash);
+        vagos_conn = HttpUtils.setHeaders("www.vagos.es", vagos_conn);
         
         // Seteamos métodos
         vagos_conn.setRequestMethod("POST");
 
         // Y datos Post a enviar
-        String vagos_post = URLEncoder.encode("vb_login_username", "UTF-8") + "=" + URLEncoder.encode(vagos_user, "UTF-8");
-        vagos_post += "&" + URLEncoder.encode("cookieuser", "UTF-8") + "=" + URLEncoder.encode("1", "UTF-8");
-        vagos_post += "&" + URLEncoder.encode("vb_login_password", "UTF-8") + "=" + URLEncoder.encode("", "UTF-8");
-        vagos_post += "&" + URLEncoder.encode("do", "UTF-8") + "=" + URLEncoder.encode("login", "UTF-8");
-        String vagos_md5pwd = MD5.MD5(vagos_password);
-        vagos_post += "&" + URLEncoder.encode("vb_login_md5password", "UTF-8") + "=" + URLEncoder.encode(vagos_md5pwd, "UTF-8");
-        vagos_post += "&" + URLEncoder.encode("vb_login_md5password_utf", "UTF-8") + "=" + URLEncoder.encode(vagos_md5pwd, "UTF-8");
+        String vagos_post = "vb_login_username="+vagos_user+"&cookieuser=1&do=login&vb_login_md5password=";
+        vagos_post += MD5.MD5(vagos_password)+"&vb_login_md5password_utf="+MD5.MD5(vagos_password);
+        vagos_post = URLEncoder.encode(vagos_post, "UTF-8");
+        vagos_post = vagos_post.replace("%3D", "=");
+        vagos_post = vagos_post.replace("%26", "&");
 
         // Enviamos los datos Post
         OutputStreamWriter vagos_conn_i = new OutputStreamWriter(vagos_conn.getOutputStream());
@@ -98,18 +88,17 @@ public class VagosConnection implements ServerConnection {
         // Asignamos el Atributo
         this.vagos_cookies = cookies;
 
-        // Debug
-        System.out.println("Debugging:");
+        // Conseguimos el sessionid
         Iterator<String> it = cookies.iterator();
-        String str=null;            //Temporary String for next while.
+        String cur_cookie=null;            //Temporary String for next while.
         while(it.hasNext()){
-            str=it.next();
-            System.out.println(str);
-            if (str.startsWith("bbsessionhash=")){
-                this.bbsessionhash=str.substring(14,46);
-                System.out.println("Session Hash = "+this.bbsessionhash);
+            cur_cookie=it.next();
+            if(cur_cookie.contains("bbsessionhash")){
+                bbsh = cur_cookie.split(";")[0].split("=")[1];
+            }else{
+                return false;
             }
-        }
+       }
 
         return true;
     }
@@ -119,7 +108,7 @@ public class VagosConnection implements ServerConnection {
      */
     public boolean disConnect() throws java.io.IOException, java.net.MalformedURLException{
         // Construimos objeto HTTPUrl con la dirección del logout + bbsessionhash
-        URL vagos_logout_url = new URL("http://vagos.wamba.com/login.php?do=logout&logouthash="+this.bbsessionhash);
+        URL vagos_logout_url = new URL("http://vagos.wamba.com/login.php?do=logout&logouthash="+bbsh);
         HttpURLConnection vagos_conn = (HttpURLConnection)vagos_logout_url.openConnection();
         BufferedReader vagos_disconn_o = new BufferedReader(new InputStreamReader(vagos_conn.getInputStream()));
         String line;
@@ -132,83 +121,18 @@ public class VagosConnection implements ServerConnection {
         }
         if(!logout_success){
             //Debug solo en caso de error
-            System.out.println(vagos_logout_url);
             return false;
         }
-        System.out.println("Sesión cerrada");
         return true;
     }
-
-    /**
-     * Función que se conecta y consigue el Session ID de vBulletin
-     * @return Session id de vBulletin.
-     * @throws java.net.MalformedURLException
-     * @throws java.io.IOException
-     */
-    public static String GetPhpSessID() throws java.net.MalformedURLException, java.io.IOException {
-
-        // Construimos el objeto HTTPUrl...
-        URL vagos_login_url = new URL("http://vagos.wamba.com/index.php");
-        HttpURLConnection vagos_conn = (HttpURLConnection)vagos_login_url.openConnection();
-        vagos_conn.setDoOutput(true);
-        // Headers
-        vagos_conn.addRequestProperty("Host", "vagos.wamba.com");
-        vagos_conn.addRequestProperty("Accept", "text/html");
-        vagos_conn.addRequestProperty("Accept-Language", "es-es,es;q=0.8,en-us;q=0.5,en;q=0.3");
-        vagos_conn.addRequestProperty("Accept-Encoding", "deflate");
-        vagos_conn.addRequestProperty("Accept-Charset", "ISO-8859-1,utf-8;q=0.7,*;q=0.7");
-        vagos_conn.addRequestProperty("Content-type", "application/x-www-form-urlencoded");
-        vagos_conn.addRequestProperty("User-Agent", "Mozilla/5.0 (Windows; U; Windows NT 5.1; es-ES; rv:1.9.1.2) Gecko/20090729 Firefox/3.5.2");
-        vagos_conn.addRequestProperty("Connection", "close");
-
-        // Seteamos método
-        vagos_conn.setRequestMethod("GET");
-        System.out.println("\tGET");
-        Map<String,List<String>> vagos_headers = vagos_conn.getHeaderFields();
-        Collection<List<String>> vagos_l_headers = vagos_headers.values();
-        Set<String> vagos_keys = vagos_headers.keySet();
-        String[] keys = new String[vagos_keys.size()];
-        int i = 0;
-        String[] values = new String[keys.length];
-        for (Iterator it=vagos_keys.iterator(); it.hasNext ();){
-            Object o = it.next();
-            if(o != null){ keys[i] = o.toString(); }
-            i++;
-
+    private String sessionHash(){
+        Iterator<String> iterator = vagos_cookies.iterator();
+        while(iterator.hasNext()){
+            String cur_cookie = iterator.next();
         }
-        i = 0;
-        for (Iterator it=vagos_l_headers.iterator(); it.hasNext( )==true; ) {
-            Object anObject = it.next();
-            values[i] = anObject.toString();
-            i++;
-        }
-        /*
-         * Debug de las cookies
-         */
-        System.out.println("\t-Cookies:");
-        String[] cookies_rdy = null;
-        for (i=0;i<keys.length;i++){
-            System.out.println("\t"+i+keys[i]+values[i]);
-        }
-        /*
-         * Fin.
-         */
-        for(i = 0; i < keys.length; i++){
-            if(keys[i] != null){
-                if(keys[i].startsWith("Set-Cookie")){
-                    String cookies_raw = values[i];
-                    cookies_raw = cookies_raw.replace("[", "");
-                    cookies_raw = cookies_raw.replace("]", "");
-                    cookies_raw = cookies_raw.split("bbsessionhash=")[1];       //Esta linea da el ArrayIndexOutOfBounds
-                    System.out.println(cookies_raw);                        //La cookie no manda PHPSESSID
-                    return cookies_raw.split(";")[0];
-                }
-            }
-        }
-
-        return null;
-        // Tenemos las claves en keys[] y los valores en value[]
+        return "";
     }
+
     public static void EchoPageText(){
     }
 
