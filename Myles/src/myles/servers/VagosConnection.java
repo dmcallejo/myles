@@ -106,6 +106,7 @@ public class VagosConnection implements ServerConnection {
      * @return éxito.
      */
     public boolean disConnect() throws java.io.IOException, java.net.MalformedURLException{
+        System.out.println(bbsh);
         // Construimos objeto HTTPUrl con la dirección del logout + bbsessionhash
         URL vagos_logout_url = new URL("http://vagos.wamba.com/login.php?do=logout&logouthash="+bbsh);
         HttpURLConnection vagos_conn = (HttpURLConnection)vagos_logout_url.openConnection();
