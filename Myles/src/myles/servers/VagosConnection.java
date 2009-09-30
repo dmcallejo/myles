@@ -6,7 +6,7 @@ import myles.utils.HttpUtils;
 import java.util.*;
 import java.io.*;
 import java.net.*;
-import myles.exceptions.InvalidSessionException;
+import myles.exceptions.*;
 
 public class VagosConnection implements ServerConnection {
 
@@ -14,7 +14,6 @@ public class VagosConnection implements ServerConnection {
     private String vagos_user;
     private String vagos_password;
     private String vagos_cookies;
-    private String bbsh;
 
     /**
      * ------------------------------------------------------------
@@ -97,7 +96,10 @@ public class VagosConnection implements ServerConnection {
      * Permite cerrar la sesión.
      * @return éxito.
      */
-    public boolean disConnect() throws java.io.IOException, java.net.MalformedURLException {
+    public boolean disConnect() throws java.io.IOException, java.net.MalformedURLException, NotConnectedException {
+        if (vagos_cookies==null) {
+            throw new NotConnectedException();
+        }
         //Obtenemos el hash de desconexión del html de la página.
         String html = HttpUtils.getPage("http://www.vagos.es", this.vagos_cookies, "www.vagos.es");
         String[] tHash = html.split("logouthash=",2);
@@ -119,7 +121,7 @@ public class VagosConnection implements ServerConnection {
         //Debug solo en caso de error
         return false;
         }
-
+        vagos_cookies=null;
         return true;
     }
 
