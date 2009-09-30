@@ -23,6 +23,7 @@ public class Main {
         VagosConnection vagos1 = new VagosConnection("ju4nk4r", "ninguna");
         try {
                 System.out.println(vagos1.connect());
+                vagos1.search("hola");
                 System.out.println(vagos1.disConnect());
 
         } catch (NotConnectedException e){

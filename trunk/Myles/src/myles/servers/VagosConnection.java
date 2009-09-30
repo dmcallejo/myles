@@ -125,15 +125,45 @@ public class VagosConnection implements ServerConnection {
         return true;
     }
 
-    public static void echoPageText() {
-    }
 
     /**
      * Implementación de la búsqueda.
      * @param search_query texto a buscar.
      * @return una búsqueda Search.
      */
-    // A poner luego
+    public void search(String search_query) throws MalformedURLException, IOException, NoSuchAlgorithmException {
+        // Construimos objeto HTTPUrlConnection con la página de Login
+        URL vagos_search_url = new URL("http://www.vagos.es/search.php?do=process");
+        HttpURLConnection vagos_search = (HttpURLConnection) vagos_search_url.openConnection();
+        search_query=search_query.replace(' ', '+');
+        System.out.println(search_query);
+        vagos_search.setDoOutput(true);
+
+        // Headers
+        vagos_search = HttpUtils.setHeaders("www.vagos.es", vagos_search);
+
+        // Seteamos métodos
+        vagos_search.setRequestMethod("POST");
+
+        // Y datos Post a enviar
+        String vagos_searchPost = "s=&securitytoken=&do=process&searchthreadid=&query="+search_query+"&titleonly=1&searchuser=&starteronly=0&exactname=1&replyless=0&replylimit=0&searchdate=0&beforeafter=after&sortby=lastpost&order=descending&showposts=0&tag=&forumchoice%5B%5D=60&childforums=1&dosearch=Buscar+Ahora&saveprefs=1";
+        vagos_searchPost = URLEncoder.encode(vagos_searchPost, "UTF-8");
+        vagos_searchPost = vagos_searchPost.replace("%3D", "=");
+        vagos_searchPost = vagos_searchPost.replace("%26", "&");
+
+        // Enviamos los datos Post
+        OutputStreamWriter vagos_search_i = new OutputStreamWriter(vagos_search.getOutputStream());
+        vagos_search_i.write(vagos_searchPost);
+        vagos_search_i.flush();
+
+        // Y recibimos el HTML de respuesta
+        BufferedReader vagos_search_o = new BufferedReader(new InputStreamReader(vagos_search.getInputStream()));
+        String aux = vagos_search_o.readLine();
+        while(aux != null){
+            aux=vagos_search_o.readLine();
+            System.out.println(aux);
+        }
+    }
     /**
      * 
      * @return
