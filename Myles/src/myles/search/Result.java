@@ -4,19 +4,22 @@ import java.util.LinkedList;
 
 public class Result {
     // Atributos
-    private String Server;
+    private String nombre;
+    private String server;
     private int numLinks;
     private String fecha;
     private LinkedList<Link> links;
     private String URL;
 
-    public Result(String Server, String URL){
-        this.Server = Server;
+    public Result(String nombre, String server, String URL){
+        this.nombre=nombre;
+        this.server = server;
         this.URL = URL;
         this.fecha = "No disponible";
     }
-    public Result(String Server, String URL, String fecha){
-        this.Server = Server;
+    public Result(String nombre, String server, String URL, String fecha){
+        this.nombre=nombre;
+        this.server = server;
         this.URL = URL;
         this.fecha = fecha;
     }
@@ -27,7 +30,7 @@ public class Result {
     }
 
     // Observadores (getters)
-    public String getServer(){ return Server; }
+    public String getServer(){ return server; }
     public int getNumLinks(){ return numLinks; }
     public String getFecha(){ return fecha; }
     public String getURL(){ return URL; }
