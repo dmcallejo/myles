@@ -14,6 +14,8 @@ public class VagosConnection implements ServerConnection {
     private String vagos_user;
     private String vagos_password;
     private String vagos_cookies;
+    private boolean is_active;
+    private boolean is_connected;
 
     /**
      * ------------------------------------------------------------
@@ -21,18 +23,22 @@ public class VagosConnection implements ServerConnection {
      *  S e r v e r :   V a g o s . e s
      * ------------------------------------------------------------
      *
-     * Método constructor de la clase, que asigna datos de usuario
+     * MÃ©todo constructor de la clase, que asigna datos de usuario
      * @param vagos_user Usuario en vagos.es
      * @param vagos_password Password en vagos.es
      */
-    public VagosConnection(String vagos_user, String vagos_password) {
+    public VagosConnection(String vagos_user, String vagos_password, String act) {
         this.vagos_user = vagos_user;
         this.vagos_password = vagos_password;
+        is_active = Integer.parseInt(act)==1;
+    }
+    public boolean is_active(){
+        return is_active;
     }
 
     public boolean connect() throws MalformedURLException, IOException, NoSuchAlgorithmException {
 
-        // Construimos objeto HTTPUrlConnection con la página de Login
+        // Construimos objeto HTTPUrlConnection con la pÃ¡gina de Login
         URL vagos_login_url = new URL("http://vagos.wamba.com/login.php?do=login");
         HttpURLConnection vagos_conn = (HttpURLConnection) vagos_login_url.openConnection();
 
@@ -41,7 +47,7 @@ public class VagosConnection implements ServerConnection {
         // Headers
         vagos_conn = HttpUtils.setHeaders("www.vagos.es", vagos_conn);
 
-        // Seteamos métodos
+        // Seteamos mÃ©todos
         vagos_conn.setRequestMethod("POST");
 
         // Y datos Post a enviar
@@ -60,8 +66,8 @@ public class VagosConnection implements ServerConnection {
         BufferedReader vagos_conn_o = new BufferedReader(new InputStreamReader(vagos_conn.getInputStream()));
         String line;
 
-        // Veamos si ha habido éxito al loggearse. Hay éxito si el html contiene "redirige",
-        // en el mensaje de "Pulsa aquí si no se te redirige automáticamente."
+        // Veamos si ha habido Ã©xito al loggearse. Hay Ã©xito si el html contiene "redirige",
+        // en el mensaje de "Pulsa aquÃ­ si no se te redirige automÃ¡ticamente."
         boolean login_success = false;
 
         while ((line = vagos_conn_o.readLine()) != null) {
@@ -76,7 +82,7 @@ public class VagosConnection implements ServerConnection {
         vagos_conn_i.close();
         vagos_conn_o.close();
 
-        // Y añadimos los headers Set-Cookie en el LinkedList
+        // Y aÃ±adimos los headers Set-Cookie en el LinkedList
         if (login_success) {
             String headerName = null;
             for (int i = 1; (headerName = vagos_conn.getHeaderFieldKey(i)) != null; i++) {
@@ -93,26 +99,26 @@ public class VagosConnection implements ServerConnection {
     }
 
     /**
-     * Permite cerrar la sesión.
-     * @return éxito.
+     * Permite cerrar la sesiÃ³n.
+     * @return Ã©xito.
      */
     public boolean disConnect() throws java.io.IOException, java.net.MalformedURLException, NotConnectedException {
         if (vagos_cookies==null) {
             throw new NotConnectedException();
         }
-        //Obtenemos el hash de desconexión del html de la página.
+        //Obtenemos el hash de desconexiÃ³n del html de la pÃ¡gina.
         /*String html = HttpUtils.getPage("http://www.vagos.es", this.vagos_cookies, "www.vagos.es");
         String[] tHash = html.split("logouthash=",2);
         tHash = tHash[1].split("\" onclick=");
         System.out.println(tHash[0]);
         */
-        // Construimos objeto HTTPUrl con la dirección del logout + logouthash
+        // Construimos objeto HTTPUrl con la direcciÃ³n del logout + logouthash
         URL vagos_logout_url = new URL("http://vagos.wamba.com/login.php?do=logout&logouthash="+getHash());
         HttpURLConnection vagos_conn = (HttpURLConnection)vagos_logout_url.openConnection();
         BufferedReader vagos_disconn_o = new BufferedReader(new InputStreamReader(vagos_conn.getInputStream()));
         String line;
 
-        // Si el HTML no contiene la expresión "cookies han sido borradas", la sesión no se habrá cerrado con éxito.
+        // Si el HTML no contiene la expresiÃ³n "cookies han sido borradas", la sesiÃ³n no se habrÃ¡ cerrado con Ã©xito.
         boolean logout_success = false;
 
         while ((line = vagos_disconn_o.readLine()) != null) {
@@ -128,12 +134,12 @@ public class VagosConnection implements ServerConnection {
 
 
     /**
-     * Implementación de la búsqueda.
+     * ImplementaciÃ³n de la bÃºsqueda.
      * @param search_query texto a buscar.
-     * @return una búsqueda Search.
+     * @return una bÃºsqueda Search.
      */
     public void search(String search_query) throws MalformedURLException, IOException, NoSuchAlgorithmException {
-        // Construimos objeto HTTPUrlConnection con la página de Login
+        // Construimos objeto HTTPUrlConnection con la pÃ¡gina de Login
         URL vagos_search_url = new URL("http://www.vagos.es/search.php?do=process");
         HttpURLConnection vagos_search = (HttpURLConnection) vagos_search_url.openConnection();
         search_query=search_query.replace(' ', '+');
@@ -152,7 +158,7 @@ public class VagosConnection implements ServerConnection {
         // Headers
         vagos_search = HttpUtils.setHeaders("www.vagos.es", vagos_search);
 
-        // Seteamos métodos
+        // Seteamos mÃ©todos
         vagos_search.setRequestMethod("POST");
 
         // Y datos Post a enviar
@@ -175,14 +181,14 @@ public class VagosConnection implements ServerConnection {
         }
     }
     public String getHash(){
-        //Obtenemos el hash de desconexión del html de la página.
+        //Obtenemos el hash de desconexiÃ³n del html de la pÃ¡gina.
         String html = HttpUtils.getPage("http://www.vagos.es", this.vagos_cookies, "www.vagos.es");
         String[] tHash = html.split("logouthash=",2);
         tHash = tHash[1].split("\" onclick=");
         return tHash[0];
     }
     /**
-     * 
+     *
      * @return
      */
     public int get_server_id() {
