@@ -35,6 +35,15 @@ public class VagosConnection implements ServerConnection {
     public boolean is_active(){
         return is_active;
     }
+    public void enable(){
+        is_active = true;
+    }
+    public void disable(){
+        is_active = false;
+    }
+    public void toggle(){
+        is_active = !is_active;
+    }
 
     public boolean connect() throws MalformedURLException, IOException, NoSuchAlgorithmException {
 
@@ -93,7 +102,7 @@ public class VagosConnection implements ServerConnection {
 
         // Asignamos el Atributo
         this.vagos_cookies = cookies;
-        System.out.println(cookies);
+        this.is_connected = true;
         return true;
     }
 
@@ -128,6 +137,7 @@ public class VagosConnection implements ServerConnection {
         return false;
         }
         vagos_cookies=null;
+        this.is_connected = false;
         return true;
     }
 
