@@ -25,7 +25,7 @@ public class Main {
         try {
             VagosConnection vagos1 = new VagosConnection("myles", MD5.MD5("ojete"), "1");
             System.out.println(vagos1.connect());
-            vagos1.search("hola mundo");
+            vagos1.search("counter");
             System.out.println(vagos1.disConnect());
 
         } catch (NotConnectedException e) {
