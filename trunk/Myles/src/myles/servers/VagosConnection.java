@@ -13,7 +13,7 @@ public class VagosConnection implements ServerConnection {
     private int server_id = 1;
     private String vagos_user;
     private String vagos_password;
-    private LinkedList<String> vagos_cookies;
+    private String vagos_cookies;
     private String bbsh;
 
     /**
@@ -70,7 +70,7 @@ public class VagosConnection implements ServerConnection {
         }
         if(!login_success) return false;
 
-        LinkedList<String> cookies = new LinkedList<String>();
+        String cookies = "";
         // Cerramos los readers
         vagos_conn_i.close();
         vagos_conn_o.close();
@@ -80,25 +80,14 @@ public class VagosConnection implements ServerConnection {
             String headerName=null;
             for (int i=1; (headerName = vagos_conn.getHeaderFieldKey(i))!=null; i++) {
                 if (headerName.equals("Set-Cookie")) {
-                cookies.add(vagos_conn.getHeaderField(i));
+                    cookies += vagos_conn.getHeaderField(i).split(";")[0]+"; ";
                 }
             }
         }
 
         // Asignamos el Atributo
         this.vagos_cookies = cookies;
-
-        // Conseguimos el sessionid
-        Iterator<String> it = cookies.iterator();
-        String cur_cookie=null;            //Temporary String for next while.
-        while(it.hasNext()){
-            cur_cookie=it.next();
-            if(cur_cookie.contains("bbsessionhash")){
-                bbsh = cur_cookie.split(";")[0].split("=")[1];
-            }
-
-       }
-
+        System.out.println(cookies);
         return true;
     }
     /**
@@ -107,15 +96,9 @@ public class VagosConnection implements ServerConnection {
      */
     public boolean disConnect() throws java.io.IOException, java.net.MalformedURLException{
         //Obtenemos el hash de desconexión del html de la página.
-        String html = HttpUtils.getPage("http://www.vagos.es", vagos_cookies, "www.vagos.es");
+        String html = HttpUtils.getPage("http://www.vagos.es", this.vagos_cookies, "www.vagos.es");
 
        System.out.println(html);
-       Iterator<String> it = vagos_cookies.iterator();
-        while(it.hasNext()){
-            System.out.println("\n"+it.next());
-            
-            }
-
        
         /*
         System.out.println(bbsh);
@@ -138,13 +121,6 @@ public class VagosConnection implements ServerConnection {
           */
 
         return true;
-    }
-    private String sessionHash(){
-        Iterator<String> iterator = vagos_cookies.iterator();
-        while(iterator.hasNext()){
-            String cur_cookie = iterator.next();
-        }
-        return "";
     }
 
     public static void echoPageText(){

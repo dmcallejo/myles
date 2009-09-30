@@ -29,17 +29,6 @@ public class Main {
 
 
 
-
-            /*System.out.println(vagos1.Connect() + "\nDesconexión...");
-            System.out.println(vagos1.disConnect());*/
-            //System.out.println("\n\n"+HttpUtils.getPage("http://www.vagos.es", null, "www.vagos.es"));
-
-
-
-
-
-
-
         }/* catch (java.net.MalformedURLException e) {
             System.out.println("MalformedURLException");
         } catch (java.io.IOException e) {
