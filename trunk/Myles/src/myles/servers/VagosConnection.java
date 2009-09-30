@@ -52,7 +52,7 @@ public class VagosConnection implements ServerConnection {
 
         // Y datos Post a enviar
         String vagos_post = "vb_login_username=" + vagos_user + "&cookieuser=1&do=login&vb_login_md5password=";
-        vagos_post += MD5.MD5(vagos_password) + "&vb_login_md5password_utf=" + MD5.MD5(vagos_password);
+        vagos_post += vagos_password + "&vb_login_md5password_utf=" + vagos_password;
         vagos_post = URLEncoder.encode(vagos_post, "UTF-8");
         vagos_post = vagos_post.replace("%3D", "=");
         vagos_post = vagos_post.replace("%26", "&");
@@ -69,7 +69,6 @@ public class VagosConnection implements ServerConnection {
         // Veamos si ha habido Ã©xito al loggearse. Hay Ã©xito si el html contiene "redirige",
         // en el mensaje de "Pulsa aquÃ­ si no se te redirige automÃ¡ticamente."
         boolean login_success = false;
-
         while ((line = vagos_conn_o.readLine()) != null) {
             login_success = login_success || line.contains("Gracias por iniciar");
         }
