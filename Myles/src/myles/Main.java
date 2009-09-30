@@ -21,7 +21,8 @@ public class Main {
         System.out.println("Conexión...");
         VagosConnection vagos1 = new VagosConnection("ju4nk4r", "ninguna");
         try {
-
+                System.out.println(vagos1.connect());
+                System.out.println(vagos1.disConnect());
 
 
 
@@ -31,7 +32,7 @@ public class Main {
 
             /*System.out.println(vagos1.Connect() + "\nDesconexión...");
             System.out.println(vagos1.disConnect());*/
-            System.out.println("\n\n"+HttpUtils.getPage("http://www.vagos.es", null, "www.vagos.es"));
+            //System.out.println("\n\n"+HttpUtils.getPage("http://www.vagos.es", null, "www.vagos.es"));
 
 
 
