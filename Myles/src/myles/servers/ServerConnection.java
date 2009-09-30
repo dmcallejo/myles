@@ -8,6 +8,7 @@ package myles.servers;
  */
 public interface ServerConnection {
     public boolean is_active();
+    public boolean is_connected();
     public int get_server_id();
     public boolean connect() throws Exception;
 
