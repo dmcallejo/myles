@@ -8,6 +8,7 @@ import java.security.NoSuchAlgorithmException;
 import myles.servers.*;
 import myles.utils.*;
 import java.util.LinkedList;
+import myles.exceptions.*;
 /**
  *
  * @author User
@@ -24,17 +25,13 @@ public class Main {
                 System.out.println(vagos1.connect());
                 System.out.println(vagos1.disConnect());
 
-
-
-
-
-
-        }/* catch (java.net.MalformedURLException e) {
+        } catch (NotConnectedException e){
+            System.out.println(e);
+        } catch (java.net.MalformedURLException e) {
             System.out.println("MalformedURLException");
         } catch (java.io.IOException e) {
             System.out.println(e.getLocalizedMessage());
-        }*/
-        catch (java.lang.Exception e) {
+        } catch (java.lang.Exception e) {
             System.out.println(e);
         }
     }
