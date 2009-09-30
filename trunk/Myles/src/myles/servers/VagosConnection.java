@@ -8,8 +8,8 @@ import java.io.*;
 import java.net.*;
 import myles.exceptions.InvalidSessionException;
 
-
 public class VagosConnection implements ServerConnection {
+
     private int server_id = 1;
     private String vagos_user;
     private String vagos_password;
@@ -26,28 +26,28 @@ public class VagosConnection implements ServerConnection {
      * @param vagos_user Usuario en vagos.es
      * @param vagos_password Password en vagos.es
      */
-    public VagosConnection(String vagos_user, String vagos_password){
+    public VagosConnection(String vagos_user, String vagos_password) {
         this.vagos_user = vagos_user;
         this.vagos_password = vagos_password;
     }
 
-    public boolean connect() throws MalformedURLException, IOException, NoSuchAlgorithmException{
+    public boolean connect() throws MalformedURLException, IOException, NoSuchAlgorithmException {
 
         // Construimos objeto HTTPUrlConnection con la página de Login
         URL vagos_login_url = new URL("http://vagos.wamba.com/login.php?do=login");
-        HttpURLConnection vagos_conn = (HttpURLConnection)vagos_login_url.openConnection();
+        HttpURLConnection vagos_conn = (HttpURLConnection) vagos_login_url.openConnection();
 
         vagos_conn.setDoOutput(true);
 
         // Headers
         vagos_conn = HttpUtils.setHeaders("www.vagos.es", vagos_conn);
-        
+
         // Seteamos métodos
         vagos_conn.setRequestMethod("POST");
 
         // Y datos Post a enviar
-        String vagos_post = "vb_login_username="+vagos_user+"&cookieuser=1&do=login&vb_login_md5password=";
-        vagos_post += MD5.MD5(vagos_password)+"&vb_login_md5password_utf="+MD5.MD5(vagos_password);
+        String vagos_post = "vb_login_username=" + vagos_user + "&cookieuser=1&do=login&vb_login_md5password=";
+        vagos_post += MD5.MD5(vagos_password) + "&vb_login_md5password_utf=" + MD5.MD5(vagos_password);
         vagos_post = URLEncoder.encode(vagos_post, "UTF-8");
         vagos_post = vagos_post.replace("%3D", "=");
         vagos_post = vagos_post.replace("%26", "&");
@@ -66,9 +66,11 @@ public class VagosConnection implements ServerConnection {
         boolean login_success = false;
 
         while ((line = vagos_conn_o.readLine()) != null) {
-            login_success = login_success || line.contains("redirige");
+            login_success = login_success || line.contains("Gracias por iniciar");
         }
-        if(!login_success) return false;
+        if (!login_success) {
+            return false;
+        }
 
         String cookies = "";
         // Cerramos los readers
@@ -76,11 +78,11 @@ public class VagosConnection implements ServerConnection {
         vagos_conn_o.close();
 
         // Y añadimos los headers Set-Cookie en el LinkedList
-        if(login_success){
-            String headerName=null;
-            for (int i=1; (headerName = vagos_conn.getHeaderFieldKey(i))!=null; i++) {
+        if (login_success) {
+            String headerName = null;
+            for (int i = 1; (headerName = vagos_conn.getHeaderFieldKey(i)) != null; i++) {
                 if (headerName.equals("Set-Cookie")) {
-                    cookies += vagos_conn.getHeaderField(i).split(";")[0]+"; ";
+                    cookies += vagos_conn.getHeaderField(i).split(";")[0] + "; ";
                 }
             }
         }
@@ -90,40 +92,38 @@ public class VagosConnection implements ServerConnection {
         System.out.println(cookies);
         return true;
     }
+
     /**
      * Permite cerrar la sesión.
      * @return éxito.
      */
-    public boolean disConnect() throws java.io.IOException, java.net.MalformedURLException{
+    public boolean disConnect() throws java.io.IOException, java.net.MalformedURLException {
         //Obtenemos el hash de desconexión del html de la página.
         String html = HttpUtils.getPage("http://www.vagos.es", this.vagos_cookies, "www.vagos.es");
-
-       System.out.println(html);
-       
-        /*
-        System.out.println(bbsh);
-        // Construimos objeto HTTPUrl con la dirección del logout + bbsessionhash
-        URL vagos_logout_url = new URL("http://vagos.wamba.com/login.php?do=logout&logouthash="+bbsh);
+        String[] tHash = html.split("logouthash=",2);
+        tHash = tHash[1].split("\" onclick=");
+        System.out.println(tHash[0]);
+        // Construimos objeto HTTPUrl con la dirección del logout + logouthash
+        URL vagos_logout_url = new URL("http://vagos.wamba.com/login.php?do=logout&logouthash="+tHash[0]);
         HttpURLConnection vagos_conn = (HttpURLConnection)vagos_logout_url.openConnection();
         BufferedReader vagos_disconn_o = new BufferedReader(new InputStreamReader(vagos_conn.getInputStream()));
         String line;
 
-        // Si el HTML no contiene la palabra cerrado, la sesión no se habrá cerrado con éxito.
+        // Si el HTML no contiene la expresión "cookies han sido borradas", la sesión no se habrá cerrado con éxito.
         boolean logout_success = false;
 
         while ((line = vagos_disconn_o.readLine()) != null) {
-            logout_success = logout_success || line.contains("cerrado");
+        logout_success = logout_success || line.contains("cookies han sido borradas");
         }
         if(!logout_success){
-            //Debug solo en caso de error
-            return false;
+        //Debug solo en caso de error
+        return false;
         }
-          */
 
         return true;
     }
 
-    public static void echoPageText(){
+    public static void echoPageText() {
     }
 
     /**
@@ -131,12 +131,12 @@ public class VagosConnection implements ServerConnection {
      * @param search_query texto a buscar.
      * @return una búsqueda Search.
      */
-     // A poner luego
+    // A poner luego
     /**
      * 
      * @return
      */
-    public int get_server_id(){
+    public int get_server_id() {
         return this.server_id;
     }
 }
