@@ -24,7 +24,7 @@ public class HttpUtils {
         conn.addRequestProperty("Host", host);
         return conn;
     }
-    public static String getPage(String desiredURL, LinkedList<String> cookies, String host){
+    public static String getPage(String desiredURL, String cookies, String host){
         try {
             URL vagos_login_url = new URL(desiredURL);
             try {
@@ -33,10 +33,7 @@ public class HttpUtils {
                 NetObj = HttpUtils.setHeaders(host, NetObj);
                 NetObj.setRequestMethod("POST");
                 if(cookies != null){
-                    Iterator<String> cookie_iterator = cookies.iterator();
-                    while (cookie_iterator.hasNext()){
-                        NetObj.addRequestProperty("Cookie", cookie_iterator.next());
-                    }
+                        NetObj.addRequestProperty("Cookie", cookies);
                 }
                 BufferedReader page_o = new BufferedReader(new InputStreamReader(NetObj.getInputStream()));
                 String page_html = "";
