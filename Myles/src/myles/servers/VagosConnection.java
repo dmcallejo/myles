@@ -101,12 +101,13 @@ public class VagosConnection implements ServerConnection {
             throw new NotConnectedException();
         }
         //Obtenemos el hash de desconexión del html de la página.
-        String html = HttpUtils.getPage("http://www.vagos.es", this.vagos_cookies, "www.vagos.es");
+        /*String html = HttpUtils.getPage("http://www.vagos.es", this.vagos_cookies, "www.vagos.es");
         String[] tHash = html.split("logouthash=",2);
         tHash = tHash[1].split("\" onclick=");
         System.out.println(tHash[0]);
+        */
         // Construimos objeto HTTPUrl con la dirección del logout + logouthash
-        URL vagos_logout_url = new URL("http://vagos.wamba.com/login.php?do=logout&logouthash="+tHash[0]);
+        URL vagos_logout_url = new URL("http://vagos.wamba.com/login.php?do=logout&logouthash="+getHash());
         HttpURLConnection vagos_conn = (HttpURLConnection)vagos_logout_url.openConnection();
         BufferedReader vagos_disconn_o = new BufferedReader(new InputStreamReader(vagos_conn.getInputStream()));
         String line;
@@ -138,7 +139,16 @@ public class VagosConnection implements ServerConnection {
         search_query=search_query.replace(' ', '+');
         System.out.println(search_query);
         vagos_search.setDoOutput(true);
-
+        vagos_search.addRequestProperty("Cookie",vagos_cookies);
+        vagos_search.addRequestProperty("Accept", "text/html");
+        vagos_search.addRequestProperty("Accept-Language", "es-es,es;q=0.8,en-us;q=0.5,en;q=0.3");
+        vagos_search.addRequestProperty("Accept-Encoding", "deflate");
+        vagos_search.addRequestProperty("Accept-Charset", "ISO-8859-1,utf-8;q=0.7,*;q=0.7");
+        vagos_search.addRequestProperty("Content-type", "application/x-www-form-urlencoded");
+        vagos_search.addRequestProperty("User-Agent", "Mozilla/5.0 (Windows; U; Windows NT 5.1; es-ES; rv:1.9.1.2) Gecko/20090729 Firefox/3.5.2");
+        vagos_search.addRequestProperty("Keep-Alive", "300");
+        vagos_search.addRequestProperty("Connection", "keep-alive");
+        vagos_search.addRequestProperty("Host", "www.vagos.es");
         // Headers
         vagos_search = HttpUtils.setHeaders("www.vagos.es", vagos_search);
 
@@ -146,7 +156,7 @@ public class VagosConnection implements ServerConnection {
         vagos_search.setRequestMethod("POST");
 
         // Y datos Post a enviar
-        String vagos_searchPost = "s=&securitytoken=&do=process&searchthreadid=&query="+search_query+"&titleonly=1&searchuser=&starteronly=0&exactname=1&replyless=0&replylimit=0&searchdate=0&beforeafter=after&sortby=lastpost&order=descending&showposts=0&tag=&forumchoice%5B%5D=60&childforums=1&dosearch=Buscar+Ahora&saveprefs=1";
+        String vagos_searchPost = "s=&securitytoken="+getHash()+"&do=process&searchthreadid=&query="+search_query+"&titleonly=1&searchuser=&starteronly=0&exactname=1&replyless=0&replylimit=0&searchdate=0&beforeafter=after&sortby=lastpost&order=descending&showposts=0&tag=&forumchoice%5B%5D=60&childforums=1&dosearch=Buscar+Ahora&saveprefs=1";
         vagos_searchPost = URLEncoder.encode(vagos_searchPost, "UTF-8");
         vagos_searchPost = vagos_searchPost.replace("%3D", "=");
         vagos_searchPost = vagos_searchPost.replace("%26", "&");
@@ -163,6 +173,13 @@ public class VagosConnection implements ServerConnection {
             aux=vagos_search_o.readLine();
             System.out.println(aux);
         }
+    }
+    public String getHash(){
+        //Obtenemos el hash de desconexión del html de la página.
+        String html = HttpUtils.getPage("http://www.vagos.es", this.vagos_cookies, "www.vagos.es");
+        String[] tHash = html.split("logouthash=",2);
+        tHash = tHash[1].split("\" onclick=");
+        return tHash[0];
     }
     /**
      * 
