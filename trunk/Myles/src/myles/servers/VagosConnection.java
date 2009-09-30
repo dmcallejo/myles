@@ -154,16 +154,21 @@ public class VagosConnection implements ServerConnection {
         search_query=search_query.replace(' ', '+');
         System.out.println(search_query);
         vagos_search.setDoOutput(true);
-        vagos_search.addRequestProperty("Cookie",vagos_cookies);
+        vagos_search.addRequestProperty("Host", "www.vagos.es");
+        vagos_search.addRequestProperty("User-Agent", "Mozilla/5.0 (X11; U; Linux i686; es-ES; rv:1.9.0.14) Gecko/2009090216 Ubuntu/9.04 (jaunty) Firefox/3.0.14");
         vagos_search.addRequestProperty("Accept", "text/html");
         vagos_search.addRequestProperty("Accept-Language", "es-es,es;q=0.8,en-us;q=0.5,en;q=0.3");
         vagos_search.addRequestProperty("Accept-Encoding", "deflate");
         vagos_search.addRequestProperty("Accept-Charset", "ISO-8859-1,utf-8;q=0.7,*;q=0.7");
-        vagos_search.addRequestProperty("Content-type", "application/x-www-form-urlencoded");
-        vagos_search.addRequestProperty("User-Agent", "Mozilla/5.0 (Windows; U; Windows NT 5.1; es-ES; rv:1.9.1.2) Gecko/20090729 Firefox/3.5.2");
         vagos_search.addRequestProperty("Keep-Alive", "300");
         vagos_search.addRequestProperty("Connection", "keep-alive");
-        vagos_search.addRequestProperty("Host", "www.vagos.es");
+        vagos_search.addRequestProperty("Referer","http://www.vagos.es/search.php");
+        vagos_search.addRequestProperty("Cookie",vagos_cookies);
+        vagos_search.addRequestProperty("Content-type", "application/x-www-form-urlencoded");
+        vagos_search.addRequestProperty("Content-Length", "334");
+        
+        
+
         // Headers
         vagos_search = HttpUtils.setHeaders("www.vagos.es", vagos_search);
 
@@ -171,10 +176,11 @@ public class VagosConnection implements ServerConnection {
         vagos_search.setRequestMethod("POST");
 
         // Y datos Post a enviar
-        String vagos_searchPost = "s=&securitytoken="+getHash()+"&do=process&searchthreadid=&query="+search_query+"&titleonly=1&searchuser=&starteronly=0&exactname=1&replyless=0&replylimit=0&searchdate=0&beforeafter=after&sortby=lastpost&order=descending&showposts=0&tag=&forumchoice%5B%5D=60&childforums=1&dosearch=Buscar+Ahora&saveprefs=1";
+        String vagos_searchPost = "s=&securitytoken="+getHash()+"&do=process&searchthreadid=&query="+search_query+"&titleonly=1&searchuser=&starteronly=0&exactname=1&replyless=0&replylimit=0&searchdate=0&beforeafter=after&sortby=lastpost&order=descending&showposts=0&tag=&forumchoice[]=60&childforums=1&dosearch=Buscar+Ahora&saveprefs=1";
         vagos_searchPost = URLEncoder.encode(vagos_searchPost, "UTF-8");
         vagos_searchPost = vagos_searchPost.replace("%3D", "=");
         vagos_searchPost = vagos_searchPost.replace("%26", "&");
+        System.out.println("\n"+vagos_searchPost+"\n");
 
         // Enviamos los datos Post
         OutputStreamWriter vagos_search_i = new OutputStreamWriter(vagos_search.getOutputStream());
@@ -190,7 +196,7 @@ public class VagosConnection implements ServerConnection {
         }
     }
     public String getHash(){
-        //Obtenemos el hash de desconexiÃ³n del html de la pÃ¡gina.
+        //Obtenemos el hash de vBulletin de la pÃ¡gina.
         String html = HttpUtils.getPage("http://www.vagos.es", this.vagos_cookies, "www.vagos.es");
         String[] tHash = html.split("logouthash=",2);
         tHash = tHash[1].split("\" onclick=");
