@@ -20,7 +20,7 @@ public class Main {
      */
     public static void main(String[] args) throws NoSuchAlgorithmException {
         System.out.println("Conexión...");
-        VagosConnection vagos1 = new VagosConnection("ju4nk4r", "ninguna");
+        VagosConnection vagos1 = new VagosConnection("myles", "ojete","1");
         try {
                 System.out.println(vagos1.connect());
                 vagos1.search("hola mundo");
