@@ -20,7 +20,7 @@ public class Config {
         List servers = jdomConfig.getRootElement().getChild("srvConfig").getChildren();
         LinkedList<Element> result = new LinkedList<Element>();
         for(int i = 0; i < servers.size(); i++){
-            result.add((Element)servers.get(0));
+            result.add((Element)servers.get(i));
         }
         return result;
 
