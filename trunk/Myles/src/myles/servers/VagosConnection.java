@@ -224,7 +224,9 @@ public boolean connect() throws MalformedURLException, IOException, NoSuchAlgori
         LinkedList<Result> results = new LinkedList<Result>();
         System.out.println("Buscamos Resultados...");
             for(int i = 1; i< slices.length; i++){
-                results.add(getResult(slices[i].split("\">")[0]));
+                slices[i]=slices[i].split("\">")[0];
+                slices[i]=slices[i].split("\" style")[0];
+                results.add(getResult(slices[i]));
             }
         return results;
 
