@@ -1,12 +1,16 @@
 package myles.servers;
 
 import java.security.NoSuchAlgorithmException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import myles.utils.MD5;
 import myles.utils.HttpUtils;
 import java.util.*;
 import java.io.*;
 import java.net.*;
 import myles.exceptions.*;
+import myles.search.Result;
+import org.jdom.Element;
 
 public class VagosConnection implements ServerConnection {
 
@@ -16,6 +20,7 @@ public class VagosConnection implements ServerConnection {
     private String vagos_cookies;
     private boolean is_active;
     private boolean is_connected;
+    private ServerInfo server_info;
 
     /**
      * ------------------------------------------------------------
@@ -23,7 +28,7 @@ public class VagosConnection implements ServerConnection {
      *  S e r v e r :   V a g o s . e s
      * ------------------------------------------------------------
      *
-     * MÃ©todo constructor de la clase, que asigna datos de usuario
+     * MÃ©todo constructor de la clase (DEBUG), que asigna datos de usuario
      * @param vagos_user Usuario en vagos.es
      * @param vagos_password Password en vagos.es
      */
@@ -32,6 +37,24 @@ public class VagosConnection implements ServerConnection {
         this.vagos_password = vagos_password;
         is_active = Integer.parseInt(act)==1;
     }
+    /**
+     * Metodo constructor de la clase (OFICIAL), que contiene un atributo objeto
+     * serverInfo con toda la info del servidor.
+     */
+    public VagosConnection(Element data){
+        this.vagos_user = data.getChildText("user");
+        this.vagos_password = data.getChildText("encpass");
+        if(Integer.parseInt(data.getChildText("active"))==1){
+            this.enable();
+        }else{
+            this.disable();
+        }
+        data.removeChild("active");
+        data.removeChild("user");
+        data.removeChild("encpass");
+        this.server_info = new ServerInfo(data);
+    }
+
     public boolean is_connected(){
         return is_connected;
     }
@@ -48,7 +71,7 @@ public class VagosConnection implements ServerConnection {
         is_active = !is_active;
     }
 
-    public boolean connect() throws MalformedURLException, IOException, NoSuchAlgorithmException {
+public boolean connect() throws MalformedURLException, IOException, NoSuchAlgorithmException {
 
         // Construimos objeto HTTPUrlConnection con la pÃ¡gina de Login
         URL vagos_login_url = new URL("http://vagos.wamba.com/login.php?do=login");
@@ -118,11 +141,10 @@ public class VagosConnection implements ServerConnection {
             throw new NotConnectedException();
         }
         //Obtenemos el hash de desconexiÃ³n del html de la pÃ¡gina.
-        /*String html = HttpUtils.getPage("http://www.vagos.es", this.vagos_cookies, "www.vagos.es");
+        String html = HttpUtils.getPage("http://www.vagos.es", this.vagos_cookies, "www.vagos.es");
         String[] tHash = html.split("logouthash=",2);
         tHash = tHash[1].split("\" onclick=");
-        System.out.println(tHash[0]);
-        */
+        
         // Construimos objeto HTTPUrl con la direcciÃ³n del logout + logouthash
         URL vagos_logout_url = new URL("http://vagos.wamba.com/login.php?do=logout&logouthash="+getHash());
         HttpURLConnection vagos_conn = (HttpURLConnection)vagos_logout_url.openConnection();
@@ -150,7 +172,7 @@ public class VagosConnection implements ServerConnection {
      * @param search_query texto a buscar.
      * @return una bÃºsqueda Search.
      */
-    public void search(String search_query) throws MalformedURLException, IOException, NoSuchAlgorithmException {
+    public LinkedList<Result> search(String search_query) throws MalformedURLException, IOException, NoSuchAlgorithmException {
         // Construimos objeto HTTPUrlConnection con la pÃ¡gina de Login
         URL vagos_search_url = new URL("http://www.vagos.es/search.php?do=process");
         HttpURLConnection vagos_search = (HttpURLConnection) vagos_search_url.openConnection();
@@ -168,7 +190,6 @@ public class VagosConnection implements ServerConnection {
 
         // Y datos Post a enviar
         String vagos_searchPost = "securitytoken="+getHash()+"&do=process&searchthreadid=&query="+search_query+"&titleonly=1&searchuser&starteronly=0&exactname=1&replyless=0&replylimit=0&searchdate=0&beforeafter=after&sortby=lastpost&order=descending&showposts=0&tag=&forumchoice%5B%5D=60&childforums=1&dosearch=Buscar+Ahora&saveprefs=1";
-        System.out.println(vagos_searchPost);
         vagos_searchPost = URLEncoder.encode(vagos_searchPost, "UTF-8");
         vagos_searchPost = vagos_searchPost.replace("%3D", "=");
         vagos_searchPost = vagos_searchPost.replace("%26", "&");
@@ -181,19 +202,27 @@ public class VagosConnection implements ServerConnection {
         // Y recibimos el HTML de respuesta
         vagos_search.getInputStream();
         URL new_url = vagos_search.getURL();
-        System.out.println(new_url);
         vagos_search = (HttpURLConnection) new_url.openConnection();
         vagos_search = HttpUtils.setHeaders("www.vagos.es", vagos_search);
         vagos_search.addRequestProperty("Cookie",vagos_cookies);
         vagos_search.setRequestMethod("GET");
 
         BufferedReader search_reader = new BufferedReader(new InputStreamReader(vagos_search.getInputStream()));
-        String line;
+        String line, search_html = "";
         line = search_reader.readLine();
         while(line != null){
-            System.out.println(line);
+            search_html += line;
             line = search_reader.readLine();
         }
+       
+        // Empecemos a buscar resultados
+        String[] slices = search_html.split("id=\"thread_title_");
+        LinkedList<Result> results = new LinkedList<Result>();
+            for(int i = 1; i< slices.length; i++){
+                results.add(getResult(slices[i].split("\">")[0]));
+                break;
+            }
+        return results;
 
 
     }
@@ -210,5 +239,44 @@ public class VagosConnection implements ServerConnection {
      */
     public int get_server_id() {
         return this.server_id;
+    }
+    public ServerInfo get_server_info(){
+        return this.server_info;
+    }
+    public String user(){ return this.vagos_user; }
+    public Result getResult(String identifier) {
+        try {
+            URL new_url = new URL("http://www.vagos.es/showthread.php?t=" + identifier);
+            System.out.println("http://www.vagos.es/showthread.php?t=" + identifier);
+             HttpURLConnection post_connection = (HttpURLConnection) new_url.openConnection();
+            post_connection = HttpUtils.setHeaders("www.vagos.es", post_connection);
+            post_connection.setRequestMethod("GET");
+            String cookies = vagos_cookies.split("bbsessionhash=")[1].split(";")[0];
+            post_connection.setRequestProperty("Cookie", "bbsessionhash="+cookies+";");
+
+            BufferedReader page_o = new BufferedReader(new InputStreamReader(post_connection.getInputStream()));
+            String page_html = "";
+            String aux;
+            aux = page_o.readLine();
+            while(true){
+                if(aux!=null){
+                    page_html += page_o.readLine()+"\n";
+                    aux = page_o.readLine();
+                }else{
+                    break;
+                }
+             }
+            System.out.println(page_html);
+            Result.parseLinks(page_html);
+            return null;
+        } catch (MalformedURLException ex) {
+            Logger.getLogger(VagosConnection.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (java.io.IOException ex){
+            
+        }
+        finally {
+            return null;
+        }
+
     }
 }
