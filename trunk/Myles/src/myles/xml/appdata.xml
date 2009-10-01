@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration build="02">
+    <appConfig>               
+        <core version="0.1" date="1-Oct-09">
+			Myles
+		</core>
+		<gui version="0.0" date="1-Oct-09">               
+			defaultGui
+		</gui>
+	</appConfig>
+</configuration>

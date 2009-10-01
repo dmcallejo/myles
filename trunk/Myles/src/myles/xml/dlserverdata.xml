@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dlservers>
+	<server id="1" name="Megaupload" url="http://www.megaupload.com"></server>
+	<server id="1" name="Rapidshare" url="http://www.rapidshare.com"></server>
+	<server id="1" name="Sendspace" url="http://www.sendspace.net"></server>
+</dlservers>
