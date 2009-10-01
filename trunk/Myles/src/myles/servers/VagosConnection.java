@@ -221,9 +221,9 @@ public boolean connect() throws MalformedURLException, IOException, NoSuchAlgori
         // Empecemos a buscar resultados
         String[] slices = search_html.split("id=\"thread_title_");
         LinkedList<Result> results = new LinkedList<Result>();
+        System.out.println("Buscamos Resultados...");
             for(int i = 1; i< slices.length; i++){
                 results.add(getResult(slices[i].split("\">")[0]));
-                break;
             }
         return results;
 
@@ -253,7 +253,7 @@ public boolean connect() throws MalformedURLException, IOException, NoSuchAlgori
     public Result getResult(String identifier) {
         try {
             URL new_url = new URL("http://www.vagos.es/showthread.php?t=" + identifier);
-            System.out.println("http://www.vagos.es/showthread.php?t=" + identifier);
+            System.out.println("\n\n\n\n\n######## BUSCANDO EN http://www.vagos.es/showthread.php?t=" + identifier+"###########\n\n");
              HttpURLConnection post_connection = (HttpURLConnection) new_url.openConnection();
             post_connection = HttpUtils.setHeaders("www.vagos.es", post_connection);
             post_connection.setRequestMethod("GET");
@@ -262,23 +262,39 @@ public boolean connect() throws MalformedURLException, IOException, NoSuchAlgori
 
             BufferedReader page_o = new BufferedReader(new InputStreamReader(post_connection.getInputStream()));
             String page_html = "";
+            String[] firstpost;
             String aux;
             aux = page_o.readLine();
             while(true){
-                if(aux!=null){
-                    page_html += page_o.readLine()+"\n";
+                if(aux!=null){              
+                    if(aux.contains("showpost.php?p")){
+                        page_o.close();
+                        post_connection.disconnect();
+                        post_connection = null;
+                        firstpost = aux.split("showpost.php?p");
+                        firstpost = firstpost[1].split("&amp");
+                        aux = "http://www.vagos.es/showpost.php"+firstpost[0]+"&amp;postcount=1";
+                        System.out.println("####### Hemos conseguido la direccion del primer post. A por ello, tigre.");
+
+                        break;
+                    }
                     aux = page_o.readLine();
                 }else{
+                    page_o = null;
+                    post_connection.disconnect();
+                    post_connection = null;
                     break;
                 }
              }
-            System.out.println(page_html);
+
+            page_html = HttpUtils.getPage(aux, cookies, "www.vagos.es");
             Result.parseLinks(page_html);
             return null;
+
         } catch (MalformedURLException ex) {
             Logger.getLogger(VagosConnection.class.getName()).log(Level.SEVERE, null, ex);
         } catch (java.io.IOException ex){
-            
+            System.out.println("exception");
         }
         finally {
             return null;
