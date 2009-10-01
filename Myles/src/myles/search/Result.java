@@ -44,6 +44,7 @@ public class Result {
 
     public static Result parseLinks(String html_code){
         System.out.println("Comienza el parseo de links...");
+
         html_code = html_code.replaceAll(" ", "þ");
         html_code = html_code.replaceAll(">", "þ");
         html_code = html_code.replaceAll("<", "þ");
@@ -58,7 +59,7 @@ public class Result {
         String cur_url;
         while (dl_server_iterator.hasNext()){
             cur_dl_server = (DlServer)dl_server_iterator.next();
-            sliced_html = html_code.split(cur_dl_server.get_url());
+            sliced_html = html_code.split(cur_dl_server.get_url());           
             for(int i=1; i<sliced_html.length; i++){
                 /**
                  * Si el enlace contiene los típicos ... de un enlace abreviado,
@@ -67,7 +68,7 @@ public class Result {
                 if(!sliced_html[i].contains("...")){
                     cur_url = sliced_html[i];
                     cur_url = cur_url.split("þ")[0];
-                    System.out.println(cur_dl_server.get_url()+cur_url);
+                    System.out.println("http://"+cur_dl_server.get_url()+cur_url);
                 }
             }
 
