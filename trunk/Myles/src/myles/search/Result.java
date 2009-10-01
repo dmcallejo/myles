@@ -1,6 +1,5 @@
 package myles.search;
 import java.util.Iterator;
-import myles.search.Link;
 import java.util.LinkedList;
 import myles.config.Config;
 import myles.servers.DlServer;

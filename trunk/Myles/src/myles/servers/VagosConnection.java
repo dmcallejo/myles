@@ -3,7 +3,6 @@ package myles.servers;
 import java.security.NoSuchAlgorithmException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import myles.utils.MD5;
 import myles.utils.HttpUtils;
 import java.util.*;
 import java.io.*;
@@ -55,9 +54,11 @@ public class VagosConnection implements ServerConnection {
         this.server_info = new ServerInfo(data);
     }
 
+    @Override
     public boolean is_connected(){
         return is_connected;
     }
+    @Override
     public boolean is_active(){
         return is_active;
     }
@@ -71,6 +72,7 @@ public class VagosConnection implements ServerConnection {
         is_active = !is_active;
     }
 
+    @Override
 public boolean connect() throws MalformedURLException, IOException, NoSuchAlgorithmException {
 
         // Construimos objeto HTTPUrlConnection con la pÃ¡gina de Login
@@ -172,6 +174,7 @@ public boolean connect() throws MalformedURLException, IOException, NoSuchAlgori
      * @param search_query texto a buscar.
      * @return una bÃºsqueda Search.
      */
+    @Override
     public LinkedList<Result> search(String search_query) throws MalformedURLException, IOException, NoSuchAlgorithmException {
         // Construimos objeto HTTPUrlConnection con la pÃ¡gina de Login
         URL vagos_search_url = new URL("http://www.vagos.es/search.php?do=process");
@@ -237,12 +240,15 @@ public boolean connect() throws MalformedURLException, IOException, NoSuchAlgori
      *
      * @return
      */
+    @Override
     public int get_server_id() {
         return this.server_id;
     }
+    @Override
     public ServerInfo get_server_info(){
         return this.server_info;
     }
+    @Override
     public String user(){ return this.vagos_user; }
     public Result getResult(String identifier) {
         try {
