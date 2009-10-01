@@ -43,12 +43,13 @@ public class Result {
     public LinkedList<Link> getLinks(){ return links; }
 
     public static Result parseLinks(String html_code){
-        html_code = html_code.replaceAll(" ", "þþþ");
-        html_code = html_code.replaceAll(">", "þþþ");
-        html_code = html_code.replaceAll("<", "þþþ");
-        html_code = html_code.replaceAll("\"", "þþþ");
-        html_code = html_code.replaceAll("'", "þþþ");
-        html_code = html_code.replaceAll("\n", "þþþ");
+        System.out.println("Comienza el parseo de links...");
+        html_code = html_code.replaceAll(" ", "þ");
+        html_code = html_code.replaceAll(">", "þ");
+        html_code = html_code.replaceAll("<", "þ");
+        html_code = html_code.replaceAll("\"", "þ");
+        html_code = html_code.replaceAll("'", "þ");
+        html_code = html_code.replaceAll("\n", "þ");
 
         LinkedList<DlServer> pivot_servers = Config.getDlServers();
         Iterator dl_server_iterator = pivot_servers.iterator();
@@ -59,9 +60,15 @@ public class Result {
             cur_dl_server = (DlServer)dl_server_iterator.next();
             sliced_html = html_code.split(cur_dl_server.get_url());
             for(int i=1; i<sliced_html.length; i++){
-                cur_url = sliced_html[i];
-                //cur_url = cur_url.split("þþþ")[0];
-                //System.out.println(cur_dl_server.get_url()+cur_url);
+                /**
+                 * Si el enlace contiene los típicos ... de un enlace abreviado,
+                 * no lo utilizaremos.
+                 */
+                if(!sliced_html[i].contains("...")){
+                    cur_url = sliced_html[i];
+                    cur_url = cur_url.split("þ")[0];
+                    System.out.println(cur_dl_server.get_url()+cur_url);
+                }
             }
 
         }

@@ -18,7 +18,9 @@ public class Main {
             master_servers.Init();
             System.out.println(master_servers);*/
             VagosConnection v1 = new VagosConnection("ju4nk4r", "231d175a6f588a685bc28d34133fa5ca", "1");
+            System.out.println("Hemos conectado? "+v1.is_connected());
             v1.connect();
+            System.out.println("Hemos conectado? "+v1.is_connected());
             v1.search("prototype");
 
         } catch (Exception ex) {
