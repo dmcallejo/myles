@@ -1,17 +1,22 @@
 package myles.search;
+import java.util.Iterator;
 import myles.search.Link;
 import java.util.LinkedList;
+import myles.config.Config;
+import myles.servers.DlServer;
 
 public class Result {
     // Atributos
     private String nombre;
     private String server;
+    private int type;
     private int numLinks;
     private String fecha;
     private LinkedList<Link> links;
     private String URL;
+    private String Server;
 
-    public Result(String nombre, String server, String URL){
+        public Result(String nombre, String server, String URL){
         this.nombre=nombre;
         this.server = server;
         this.URL = URL;
@@ -29,12 +34,38 @@ public class Result {
         this.numLinks++;
     }
 
+
     // Observadores (getters)
-    public String getServer(){ return server; }
+    public String getServer(){ return Server; }
     public int getNumLinks(){ return numLinks; }
     public String getFecha(){ return fecha; }
     public String getURL(){ return URL; }
     public Link getLink(int index){ return links.get(index); }
     public LinkedList<Link> getLinks(){ return links; }
-    
+
+    public static Result parseLinks(String html_code){
+        html_code = html_code.replaceAll(" ", "þþþ");
+        html_code = html_code.replaceAll(">", "þþþ");
+        html_code = html_code.replaceAll("<", "þþþ");
+        html_code = html_code.replaceAll("\"", "þþþ");
+        html_code = html_code.replaceAll("'", "þþþ");
+        html_code = html_code.replaceAll("\n", "þþþ");
+
+        LinkedList<DlServer> pivot_servers = Config.getDlServers();
+        Iterator dl_server_iterator = pivot_servers.iterator();
+        DlServer cur_dl_server;
+        String[] sliced_html;
+        String cur_url;
+        while (dl_server_iterator.hasNext()){
+            cur_dl_server = (DlServer)dl_server_iterator.next();
+            sliced_html = html_code.split(cur_dl_server.get_url());
+            for(int i=1; i<sliced_html.length; i++){
+                cur_url = sliced_html[i];
+                //cur_url = cur_url.split("þþþ")[0];
+                //System.out.println(cur_dl_server.get_url()+cur_url);
+            }
+
+        }
+        return null;
+    }
 }
