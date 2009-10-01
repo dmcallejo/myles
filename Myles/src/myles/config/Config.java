@@ -18,7 +18,7 @@ public class Config {
         // Creamos el builder basado en SAX
         SAXBuilder builder = new SAXBuilder();
         // Construimos el arbol DOM a partir del fichero xml
-        Document jdomConfig = builder.build(new FileInputStream("C:/config/serverdata.xml"));
+        Document jdomConfig = builder.build(new FileInputStream("/home/diego/NetBeansProjects/Myles/src/myles/xml/serverdata.xml"));
         // rootConfig será el elemento raíz del XML
         List servers = jdomConfig.getRootElement().getChild("srvConfig").getChildren();
         LinkedList<Element> result = new LinkedList<Element>();
@@ -32,9 +32,10 @@ public class Config {
             LinkedList<DlServer> result = new LinkedList<DlServer>();
             SAXBuilder builder = new SAXBuilder();
             // Construimos el arbol DOM a partir del fichero xml
-            Document jdomConfig = builder.build(new FileInputStream("C:/config/dlserverdata.xml"));
+            Document jdomConfig = builder.build(new FileInputStream("/home/diego/NetBeansProjects/Myles/src/myles/xml/dlserverdata.xml"));
             // rootConfig será el elemento raíz del XML
             List servers = jdomConfig.getRootElement().getChildren();
+            System.out.println(jdomConfig.getRootElement().getChild("server").getAttributeValue("url"));
             for (int i = 0; i < servers.size(); i++) {
                 Element this_dl_server = (Element) servers.get(i);
                 result.add(new DlServer(Integer.parseInt(this_dl_server.getAttributeValue("id")), this_dl_server.getAttributeValue("name"), this_dl_server.getAttributeValue("url")));
