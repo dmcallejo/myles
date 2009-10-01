@@ -214,6 +214,7 @@ public boolean connect() throws MalformedURLException, IOException, NoSuchAlgori
         String line, search_html = "";
         line = search_reader.readLine();
         while(line != null){
+            if(line.contains("<td class=\"tfoot\" ")){ break; }
             search_html += line;
             line = search_reader.readLine();
         }
