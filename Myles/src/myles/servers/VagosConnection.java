@@ -296,8 +296,9 @@ public class VagosConnection implements ServerConnection {
     public String getHash() {
         //Obtenemos el hash de desconexiÃ³n del html de la pÃ¡gina.
         String html = HttpUtils.getPage("http://www.vagos.es", this.vagos_cookies, "www.vagos.es");
-        String[] tHash = html.split("logouthash=", 2);
-        tHash = tHash[1].split("\" onclick=");
+        String[] tHash = html.split("var SECURITYTOKEN = \"", 2);
+        tHash = tHash[1].split("\";");
+        System.out.println(tHash[0]);
         return tHash[0];
     }
 
