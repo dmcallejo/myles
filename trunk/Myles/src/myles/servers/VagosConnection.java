@@ -147,11 +147,6 @@ public class VagosConnection implements ServerConnection {
         if (vagos_cookies == null) {
             throw new NotConnectedException();
         }
-        //Obtenemos el hash de desconexiÃ³n del html de la pÃ¡gina.
-        String html = HttpUtils.getPage("http://www.vagos.es", this.vagos_cookies, "www.vagos.es");
-        String[] tHash = html.split("logouthash=", 2);
-        tHash = tHash[1].split("\" onclick=");
-
         // Construimos objeto HTTPUrl con la direcciÃ³n del logout + logouthash
         URL vagos_logout_url = new URL("http://vagos.wamba.com/login.php?do=logout&logouthash=" + getHash());
         HttpURLConnection vagos_conn = (HttpURLConnection) vagos_logout_url.openConnection();
