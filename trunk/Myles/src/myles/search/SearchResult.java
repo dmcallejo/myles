@@ -69,7 +69,6 @@ public class SearchResult {
         String[] sliced_html;
         String cur_url;
         while (k<h & dl_server_iterator.hasNext()) {
-            System.out.println((k<h)+" h="+h+" k="+k);
             cur_dl_server = (DlServer) dl_server_iterator.next();
             if (servers==null || cur_dl_server.get_id() == servers[k]) {
                 Result tResult = new Result(title,cur_dl_server.get_id(),url);
@@ -97,7 +96,6 @@ public class SearchResult {
                 k++;
             }
         }
-        System.out.println("Returno");
         return results;
     }
 
