@@ -69,7 +69,7 @@ public class SearchResult {
         String[] sliced_html;
         String cur_url;
         while (k<h & dl_server_iterator.hasNext()) {
-            System.out.println((h<k)+" h="+h+" k="+k);
+            System.out.println((k<h)+" h="+h+" k="+k);
             cur_dl_server = (DlServer) dl_server_iterator.next();
             if (servers==null || cur_dl_server.get_id() == servers[k]) {
                 Result tResult = new Result(title,cur_dl_server.get_id(),url);
@@ -92,11 +92,12 @@ public class SearchResult {
                  * Una vez añadidos los enlaces al Result temporal, se añade al
                  * LL de Results que se retornará y se incrementa el iterador.
                  */
-                System.out.println("\n");
+                System.out.println("Total links: "+tResult.getNumLinks()+"\n");
                 results.add(tResult);
                 k++;
             }
         }
+        System.out.println("Returno");
         return results;
     }
 
