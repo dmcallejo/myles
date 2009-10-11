@@ -8,7 +8,7 @@ import java.util.*;
 import java.io.*;
 import java.net.*;
 import myles.exceptions.*;
-import myles.search.Result;
+import myles.search.*;
 import org.jdom.Element;
 
 public class VagosConnection implements ServerConnection {
@@ -174,7 +174,7 @@ public class VagosConnection implements ServerConnection {
      * @return una bÃºsqueda Search.
      */
     @Override
-    public LinkedList<Result> search(String search_query) throws MalformedURLException, IOException, NoSuchAlgorithmException {
+    public SearchResult search(String search_query,int[] servers) throws MalformedURLException, IOException, NoSuchAlgorithmException {
         // Construimos objeto HTTPUrlConnection con la pÃ¡gina de Login
         URL vagos_search_url = new URL("http://www.vagos.es/search.php?do=process");
         HttpURLConnection vagos_search = (HttpURLConnection) vagos_search_url.openConnection();
@@ -230,14 +230,16 @@ public class VagosConnection implements ServerConnection {
             title= title.split("</a>")[0];
             id = id.split("\">")[0];
             slices[i] = slices[i].split("\" style")[0];
-            results.add(getResult(id,title));
+            LinkedList<Result> r = getResult(id,title,servers);
+            System.out.println(r);
+            results.addAll(r);
         }
-        return results;
+        return new SearchResult(search_query,servers,results);
 
 
     }
 
-    public Result getResult(String identifier,String title) {
+    public LinkedList<Result> getResult(String identifier,String title,int[] servers) {
         try {
             URL new_url = new URL("http://www.vagos.es/showthread.php?t=" + identifier);
             System.out.println("\n\n\n\n\n######## BUSCANDO EN http://www.vagos.es/showthread.php?t=" + identifier + "###########\n\n");
@@ -247,7 +249,6 @@ public class VagosConnection implements ServerConnection {
             post_connection.setRequestMethod("GET");
             String cookies = vagos_cookies.split("bbsessionhash=")[1].split(";")[0];
             post_connection.setRequestProperty("Cookie", "bbsessionhash=" + cookies + ";");
-
             BufferedReader page_o = new BufferedReader(new InputStreamReader(post_connection.getInputStream()));
             String page_html = "";
             String[] firstpost;
@@ -274,15 +275,18 @@ public class VagosConnection implements ServerConnection {
                 }
             }
 
-            page_html = HttpUtils.getPage(aux, cookies, "www.vagos.es");
-            Result.parseLinks(page_html);
-            return null;
+            page_html = HttpUtils.getPage(aux, cookies, "www.vagos.es"); 
+            return SearchResult.parseLinks(page_html,title,servers,"http://www.vagos.es/showthread.php?t="+identifier);
 
         } catch (MalformedURLException ex) {
+            System.out.println(ex+" cohone");
             Logger.getLogger(VagosConnection.class.getName()).log(Level.SEVERE, null, ex);
         } catch (java.io.IOException ex) {
-            System.out.println("exception");
+            System.out.println(ex);
+        } catch (Exception ex){
+            System.out.println(ex);
         } finally {
+            System.out.println("\n getResult FINALLY");;
             return null;
         }
 
