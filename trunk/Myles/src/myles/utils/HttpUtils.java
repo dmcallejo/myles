@@ -18,13 +18,20 @@ public class HttpUtils {
         conn.addRequestProperty("Accept-Language", "es-es,es;q=0.8,en-us;q=0.5,en;q=0.3");
         conn.addRequestProperty("Accept-Charset", "ISO-8859-1,utf-8;q=0.7,*;q=0.7");
         conn.addRequestProperty("Content-type", "application/x-www-form-urlencoded");
-        conn.addRequestProperty("User-Agent", "Mozilla/5.0 (Windows; U; Windows NT 5.1; es-ES; rv:1.9.1.2) Gecko/20090729 Firefox/3.5.2");
+        conn.addRequestProperty("User-Agent", "Mozilla/5.0 (X11; U; Linux i686; es-ES; rv:1.9.0.14) Gecko/2009090216 Ubuntu/9.04 (jaunty) Firefox/3.0.14");
         conn.addRequestProperty("Connection", "keep-alive");
         conn.addRequestProperty("Keep-Alive", "300");
         conn.addRequestProperty("Host", host);
         return conn;
     }
-
+    /**
+     * Retorne al código fuente de un html pedido por la url.
+     *
+     * @param desiredURL
+     * @param cookies   Cookie (si se desea enviar).
+     * @param host
+     * @return
+     */
     public static String getPage(String desiredURL, String cookies, String host) {
         try {
             URL vagos_login_url = new URL(desiredURL);
@@ -62,7 +69,8 @@ public class HttpUtils {
     }
 
     /**
-     * Permite abrir una url en el navegador predeterminado de la maquina.
+     * Permite abrir una url en el navegador predeterminado de la maquina,
+     * independientemente del Sistema Operativo.
      *
      * @param url
      * @throws java.io.IOException Lanzada si ocurren problemas de comunicación.
