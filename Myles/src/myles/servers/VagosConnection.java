@@ -231,7 +231,7 @@ public class VagosConnection implements ServerConnection {
             id = id.split("\">")[0];
             slices[i] = slices[i].split("\" style")[0];
             LinkedList<Result> r = getResult(id,title,servers);
-            System.out.println(r);
+            System.out.println("getResult nos tira "+r);
             results.addAll(r);
         }
         return new SearchResult(search_query,servers,results);
@@ -275,7 +275,8 @@ public class VagosConnection implements ServerConnection {
                 }
             }
 
-            page_html = HttpUtils.getPage(aux, cookies, "www.vagos.es"); 
+            page_html = HttpUtils.getPage(aux, cookies, "www.vagos.es");
+            /* problema aquí */
             return SearchResult.parseLinks(page_html,title,servers,"http://www.vagos.es/showthread.php?t="+identifier);
 
         } catch (MalformedURLException ex) {
