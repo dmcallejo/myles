@@ -228,7 +228,7 @@ public class VagosConnection implements ServerConnection {
             String title = slices[i].split("\">")[1];
             String id = slices[i].split("\">")[0];
             title = title.split("</a>")[0];
-            id = id.split("\">")[0];
+            id = id.split("\" ")[0];
             slices[i] = slices[i].split("\" style")[0];
             LinkedList<Result> r = getResult(id, title, servers);
             results.addAll(r);
@@ -275,7 +275,6 @@ public class VagosConnection implements ServerConnection {
         }
 
         page_html = HttpUtils.getPage(aux, cookies, "www.vagos.es");
-        /* problema aquí */
         return SearchResult.parseLinks(page_html, title, servers, "http://www.vagos.es/showthread.php?t=" + identifier);
 
 

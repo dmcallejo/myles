@@ -49,7 +49,7 @@ public class HttpUtils {
                 while (true) {
                     aux = page_o.readLine();
                     if (aux != null) {
-                        page_html += page_o.readLine() + "\n";
+                        page_html += aux + "\n";        //Aquí estaba el fallo, aux era readLine().
                     } else {
                         break;
                     }
