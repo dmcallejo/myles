@@ -14,9 +14,6 @@ import org.jdom.Element;
 public class Main {
     public static void main(String[] args){
         try {
-            /**
-             *
-             * ESTE ERA TU CÓDIGO CAPULLO!!!!
 
             LinkedList<Element> logins = Config.getLoginInfo();
             Element log = logins.getLast();
@@ -31,12 +28,7 @@ public class Main {
         } catch (Exception ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
-            :D * */
-           Config.addLoginInfo(1, "Vagos.es", "www.vagos.es", "palurdo", "ninguna");
-        }
-        catch(Exception e){
-        System.out.println(e.getLocalizedMessage());
-        }
+
     }
 }
 

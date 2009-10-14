@@ -36,6 +36,7 @@ public class Result {
     public String getURL(){ return URL; }
     public Link getLink(int index){ return links.get(index); }
     public LinkedList<Link> getLinks(){ return links; }
+    public void setLinks(LinkedList<Link> new_links){ this.links = new_links; }
 
     
 }
