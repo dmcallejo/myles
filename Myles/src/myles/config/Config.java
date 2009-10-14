@@ -6,7 +6,7 @@ import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.jdom.Document;
 import org.jdom.Element;
-import org.jdom.Element;
+import org.jdom.output.*;
 import java.io.*;
 import java.util.LinkedList;
 import java.util.List;
@@ -33,30 +33,36 @@ public class Config {
          * Primero de todo, construimos el child que vamos a "appendar" al árobl XML.
          * Chof
          */
-        Element newChild = new Element("Server");
-        newChild.setAttribute("type", Integer.toString(type));
-        newChild.setAttribute("name", name);
-        newChild.setAttribute("url", URL);
-        Element active = new Element("active");
-        active.setText("1");
-        Element xml_user = new Element("user");
-        xml_user.setText(user);
-        Element encpass = new Element("encpass");
-        encpass.setText(MD5.MD5(pass));
-        newChild.addContent(active);
-        newChild.addContent(xml_user);
-        newChild.addContent(encpass);
+       Element newChild = new Element("Server");
+       newChild.setAttribute("type", Integer.toString(type));
+       newChild.setAttribute("name", name);
+       newChild.setAttribute("url", URL);
+       Element active = new Element("active");
+       active.setText("1");
+       Element xml_user = new Element("user");
+       xml_user.setText(user);
+       Element encpass = new Element("encpass");
+       encpass.setText(MD5.MD5(pass));
+       newChild.addContent(active);
+       newChild.addContent(xml_user);
+       newChild.addContent(encpass);
         /**
          * Child preparado para meterse al árbol!
          */
         // Creamos el builder basado en Sax, again
-        SAXBuilder builder = new SAXBuilder();
-        // Construimos...
-        Document jdomConfig = builder.build(Config.class.getResourceAsStream("../xml/serverdata.xml"));
-        // rootConfig...
+       SAXBuilder builder = new SAXBuilder();
+       // Construimos...
+       Document jdomConfig = builder.build(Config.class.getResourceAsStream("../xml/serverdata.xml"));
+       // rootConfig...
 
-        Element servers = jdomConfig.getRootElement().getChild("srvConfig");
-        servers.addContent(newChild);
+       Element servers = jdomConfig.getRootElement().getChild("srvConfig");
+       servers.addContent(newChild);
+
+       
+       XMLOutputter xml_out = new XMLOutputter();
+       FileWriter fileWriter=new FileWriter("../xml/serverdata.xml");
+       BufferedWriter out = new BufferedWriter(fileWriter);
+       xml_out.output(jdomConfig, out);
 
        // Hasta luego!
         return true;
