@@ -6,10 +6,12 @@ import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.jdom.Document;
 import org.jdom.Element;
+import org.jdom.Element;
 import java.io.*;
 import java.util.LinkedList;
 import java.util.List;
 import myles.servers.DlServer;
+import myles.utils.MD5;
 
 public class Config {
 
@@ -25,6 +27,40 @@ public class Config {
             result.add((Element) servers.get(i));
         }
         return result;
+    }
+    public static boolean addLoginInfo(int type, String name, String URL, String user, String pass) throws java.security.NoSuchAlgorithmException, org.jdom.JDOMException, java.io.IOException {
+        /**
+         * Primero de todo, construimos el child que vamos a "appendar" al árobl XML.
+         * Chof
+         */
+        Element newChild = new Element("Server");
+        newChild.setAttribute("type", Integer.toString(type));
+        newChild.setAttribute("name", name);
+        newChild.setAttribute("url", URL);
+        Element active = new Element("active");
+        active.setText("1");
+        Element xml_user = new Element("user");
+        xml_user.setText(user);
+        Element encpass = new Element("encpass");
+        encpass.setText(MD5.MD5(pass));
+        newChild.addContent(active);
+        newChild.addContent(xml_user);
+        newChild.addContent(encpass);
+        /**
+         * Child preparado para meterse al árbol!
+         */
+        // Creamos el builder basado en Sax, again
+        SAXBuilder builder = new SAXBuilder();
+        // Construimos...
+        Document jdomConfig = builder.build(Config.class.getResourceAsStream("../xml/serverdata.xml"));
+        // rootConfig...
+
+        Element servers = jdomConfig.getRootElement().getChild("srvConfig");
+        servers.addContent(newChild);
+
+       // Hasta luego!
+        return true;
+
     }
 
     public static LinkedList<DlServer> getDlServers() {
