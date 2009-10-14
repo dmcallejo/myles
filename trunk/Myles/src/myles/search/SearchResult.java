@@ -47,7 +47,8 @@ public class SearchResult {
      */
     public static LinkedList<Result> parseLinks(String html_code, String title, int[] servers, String url) {
         System.out.println("Comienza el parseo de links...");
-
+        LinkedList<String> cmp_unique;
+        String aux_url;
         html_code = html_code.replaceAll(" ", "þ");
         html_code = html_code.replaceAll(">", "þ");
         html_code = html_code.replaceAll("<", "þ");
@@ -69,6 +70,7 @@ public class SearchResult {
         String[] sliced_html;
         String cur_url;
         while (k<h & dl_server_iterator.hasNext()) {
+            cmp_unique = new LinkedList<String>();
             cur_dl_server = (DlServer) dl_server_iterator.next();
             if (servers==null || cur_dl_server.get_id() == servers[k]) {
                 Result tResult = new Result(title,cur_dl_server.get_id(),url);
@@ -81,21 +83,30 @@ public class SearchResult {
                     if (!sliced_html[i].contains("...")) {
                         cur_url = sliced_html[i];
                         cur_url = cur_url.split("þ")[0];
-                        System.out.println("http://" + cur_dl_server.get_url() + cur_url);
-
-                        tResult.addLink("http://" + cur_dl_server.get_url() + cur_url);
+                        aux_url = "http://" + cur_dl_server.get_url() + cur_url;
+                        if(!cmp_unique.contains(aux_url)){
+                            System.out.println(aux_url);      //Debug
+                            tResult.addLink(aux_url);
+                            cmp_unique.add(aux_url);
+                        }
                         
                     }
                 }
+
+
                 /*
                  * Una vez añadidos los enlaces al Result temporal, se añade al
                  * LL de Results que se retornará y se incrementa el iterador.
                  */
                 System.out.println("Total links: "+tResult.getNumLinks()+"\n");
+
                 results.add(tResult);
                 k++;
             }
+
+
         }
+
         return results;
     }
 
