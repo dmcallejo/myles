@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration build="02">
 	<srvConfig>
-		<Server type="1" name="Vagos.es" url="http://vagos.wamba.com">
+		<Server type="1" name="Vagos.es" url="www.vagos.es">
 			<active>1</active>
 			<user>ju4nk4r</user>
 			<encpass>231d175a6f588a685bc28d34133fa5ca</encpass>
 		</Server>
-		<Server type="1" name="Vagos.es" url="http://vagos.wamba.com">
+		<Server type="1" name="Vagos.es" url="www.vagos.es">
 			<active>0</active>
 			<user>myles</user>
 			<encpass>55aec1aa39b3d6cf1495359aa8105d6e</encpass>
