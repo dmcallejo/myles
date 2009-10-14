@@ -57,10 +57,10 @@ public class Config {
 
        Element servers = jdomConfig.getRootElement().getChild("srvConfig");
        servers.addContent(newChild);
-
-       
+     
        XMLOutputter xml_out = new XMLOutputter();
-       FileWriter fileWriter=new FileWriter("../xml/serverdata.xml");
+       String url = Config.class.getResource("../xml/serverdata.xml").getFile();
+       FileWriter fileWriter=new FileWriter(url);
        BufferedWriter out = new BufferedWriter(fileWriter);
        xml_out.output(jdomConfig, out);
 
