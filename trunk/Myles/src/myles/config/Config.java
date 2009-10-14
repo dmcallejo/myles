@@ -1,4 +1,5 @@
 package myles.config;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.jdom.JDOMException;
@@ -10,32 +11,31 @@ import java.util.LinkedList;
 import java.util.List;
 import myles.servers.DlServer;
 
-
-
 public class Config {
 
-    public static LinkedList<Element> get_login_info() throws org.jdom.JDOMException, java.io.IOException{
+    public static LinkedList<Element> getLoginInfo() throws org.jdom.JDOMException, java.io.IOException {
         // Creamos el builder basado en SAX
         SAXBuilder builder = new SAXBuilder();
         // Construimos el arbol DOM a partir del fichero xml
-        Document jdomConfig = builder.build(new FileInputStream("/home/diego/NetBeansProjects/Myles/src/myles/xml/serverdata.xml"));
+        Document jdomConfig = builder.build(Config.class.getResourceAsStream("../xml/serverdata.xml"));
         // rootConfig será el elemento raíz del XML
         List servers = jdomConfig.getRootElement().getChild("srvConfig").getChildren();
         LinkedList<Element> result = new LinkedList<Element>();
-        for(int i = 0; i < servers.size(); i++){
-            result.add((Element)servers.get(i));
+        for (int i = 0; i < servers.size(); i++) {
+            result.add((Element) servers.get(i));
         }
         return result;
     }
-    public static LinkedList<DlServer> getDlServers(){
+
+    public static LinkedList<DlServer> getDlServers() {
         try {
             LinkedList<DlServer> result = new LinkedList<DlServer>();
             SAXBuilder builder = new SAXBuilder();
             // Construimos el arbol DOM a partir del fichero xml
-            Document jdomConfig = builder.build(new FileInputStream("/home/diego/NetBeansProjects/Myles/src/myles/xml/dlserverdata.xml"));
+            Document jdomConfig = builder.build(Config.class.getResourceAsStream("../xml/dlserverdata.xml"));
             // rootConfig será el elemento raíz del XML
             List servers = jdomConfig.getRootElement().getChildren();
-    
+
             for (int i = 0; i < servers.size(); i++) {
                 Element this_dl_server = (Element) servers.get(i);
                 result.add(new DlServer(Integer.parseInt(this_dl_server.getAttributeValue("id")), this_dl_server.getAttributeValue("name"), this_dl_server.getAttributeValue("url")));
@@ -48,6 +48,5 @@ public class Config {
             Logger.getLogger(Config.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         }
-    } 
-
+    }
 }
