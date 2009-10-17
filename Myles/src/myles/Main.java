@@ -27,6 +27,7 @@ public class Main {
             
 
         } catch (Exception ex) {
+            System.out.println(ex);
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
 
