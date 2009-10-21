@@ -35,28 +35,33 @@ public class Download extends Thread {
     public void run() {
         String[] versions = GetVersion.GetAppVersion();
         File f = new File("tmp.tmp"); // Creamos un objeto file
-	String path=f.getAbsolutePath(); // Llamamos al método que devuelve la ruta absoluta
+        String path = f.getAbsolutePath(); // Llamamos al método que devuelve la ruta absoluta
         path = path.split("tmp.tmp")[0];
 
 
         // Aquí actualizamos
         parent.log("Comenzando la actualización.");
         parent.log("----------------------------");
-        parent.log("Actualizando a la versión "+versions[0]+" lanzada el "+versions[1]);
+        parent.log("Actualizando a la versión " + versions[0] + " lanzada el " + versions[1]);
         download();
         parent.log("La nueva versión del programa ha sido descargada correctamente.\n");
-        File viejo = new File(path+"myles.pdf");
+        File viejo = new File(path + "myles.pdf");
         parent.log("Haciendo copia de seguridad de la versión anterior. Utilice el menú Restaurar");
         parent.log("si la actualización actual falla (antes de darle a actualizar).\n");
-        File backup = new File(path+"backup.pdf");
-        if(viejo.renameTo(backup)){
+        File backup = new File(path + "backup.pdf");
+        if (viejo.renameTo(backup)) {
             parent.log("Copia de seguridad realizada con éxito.");
-            backup = new File(path+fpath);
-            viejo = new File(path+"myles.pdf");
+            backup = new File(path + fpath);
+            viejo = new File(path + "myles.pdf");
             parent.log("Actualización completada con éxito. Pulse lanzar para volver a Myles. Gracias.");
             backup.renameTo(viejo);
-
+            parent.actualizando = false;
+            parent.jButton1.setEnabled(true);
+            parent.jButton1.setText("Re-Actualizar");
         }
+        parent.actualizando = false;
+        parent.jButton1.setEnabled(true);
+        parent.jButton1.setText("Re-Actualizar");
 
     }
 
@@ -82,7 +87,7 @@ public class Download extends Thread {
             int progreso = 0;
             int tLeido = leido;
             NumberFormat formatter = new DecimalFormat("#0.00");
-            parent.log("Tamaño del nuevo JAR: "+formatter.format((double)urlCon.getContentLength()/1048576)+" MB.");
+            parent.log("Tamaño del nuevo JAR: " + formatter.format((double) urlCon.getContentLength() / 1048576) + " MB.");
             while (leido > 0) {
                 tLeido += leido;
                 progreso = (int) (((double) tLeido / (double) urlCon.getContentLength()) * 100);
