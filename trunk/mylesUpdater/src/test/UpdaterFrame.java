@@ -10,8 +10,6 @@
  */
 
 package test;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
 /**
  *
  * @author Juankar
@@ -200,7 +198,10 @@ public class UpdaterFrame extends javax.swing.JFrame {
     }
     public void setProgress1(int amonto){
         jProgressBar1.setValue(amonto);
-        jProgressBar1.setString("Progreso: "+amonto+" %");
+        jProgressBar1.setString("Progreso: "+amonto+"%");
+        if (amonto==100){
+            jProgressBar1.setString("Actualización competada");
+        }
     }
 
 
