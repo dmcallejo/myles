@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Date;
 
 /**
  * Ejemplo de descarga de un fichero de imagen desde la web.
@@ -85,13 +86,32 @@ public class Download extends Thread {
             byte[] array = new byte[1000]; // buffer temporal de lectura.
             int leido = is.read(array);
             int progreso = 0;
+            double velocidad = 0;
             int tLeido = leido;
             NumberFormat formatter = new DecimalFormat("#0.00");
             parent.log("Tamaño del nuevo JAR: " + formatter.format((double) urlCon.getContentLength() / 1048576) + " MB.");
+            /*
+             * El siguiente algoritmo calcula la velocidad de descarga a partir de dos Dates.
+             */
+            Date ref1 = new Date();
+            int tRef1 = tLeido;
+            String velocidadEnBonito = "(calculando)";
             while (leido > 0) {
+                Date ref2 = new Date();
+                if (Math.abs(ref1.getTime() - ref2.getTime()) >= 1000) {    //Se estima el segundo de tiempo pasado.
+                    velocidad = (Math.abs((double) tRef1 - (double) tLeido) / 1024); //Se calcula
+                    if (velocidad > 1024) {             //En caso de que se llegue a la inimagniable cifra del mega
+                        velocidad = velocidad / 1024;   // se trata el valor para que se muestre mas bonito.
+                        velocidadEnBonito = formatter.format(velocidad) + "MB/s";
+                    } else {
+                        velocidadEnBonito = formatter.format(velocidad) + "KB/s";
+                    }
+                    tRef1 = tLeido;
+                    ref1 = new Date();      //Nuevo date para la proxima medición de velocidad.
+                }
                 tLeido += leido;
                 progreso = (int) (((double) tLeido / (double) urlCon.getContentLength()) * 100);
-                parent.setProgress1(progreso);
+                parent.setProgress1(progreso, velocidadEnBonito);
                 fos.write(array, 0, leido);
                 leido = is.read(array);
             }
