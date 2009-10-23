@@ -196,9 +196,9 @@ public class UpdaterFrame extends javax.swing.JFrame {
             }
         });
     }
-    public void setProgress1(int amonto){
+    public void setProgress1(int amonto,String velocidad){
         jProgressBar1.setValue(amonto);
-        jProgressBar1.setString("Progreso: "+amonto+"%");
+        jProgressBar1.setString("Progreso: "+amonto+"%. Velocidad: "+velocidad);
         if (amonto==100){
             jProgressBar1.setString("Actualización competada");
         }
