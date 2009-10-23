@@ -99,7 +99,7 @@ public class Download extends Thread {
             while (leido > 0) {
                 Date ref2 = new Date();
                 if (Math.abs(ref1.getTime() - ref2.getTime()) >= 1000) {    //Se estima el segundo de tiempo pasado.
-                    velocidad = (Math.abs((double) tRef1 - (double) tLeido) / 1024); //Se calcula
+                    velocidad = (Math.abs((double) tRef1 - (double) tLeido)/(Math.abs(ref1.getTime() - ref2.getTime())/1000) / 1024); //Se calcula
                     if (velocidad > 1024) {             //En caso de que se llegue a la inimagniable cifra del mega
                         velocidad = velocidad / 1024;   // se trata el valor para que se muestre mas bonito.
                         velocidadEnBonito = formatter.format(velocidad) + "MB/s";
