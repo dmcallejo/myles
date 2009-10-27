@@ -41,11 +41,13 @@ public class Download extends Thread {
 
 
         // Aquí actualizamos
-        parent.log("Comenzando la actualización.");
+        parent.log("\nComenzando la actualización.");
         parent.log("----------------------------");
         parent.log("Actualizando a la versión " + versions[0] + " lanzada el " + versions[1]);
         download();
         parent.log("La nueva versión del programa ha sido descargada correctamente.\n");
+        parent.jButton1.setEnabled(false);
+        parent.jButton1.setText("Espere, por favor...");
         File viejo = new File(path + "myles.pdf");
         parent.log("Haciendo copia de seguridad de la versión anterior. Utilice el menú Restaurar");
         parent.log("si la actualización actual falla (antes de darle a actualizar).\n");
@@ -58,6 +60,7 @@ public class Download extends Thread {
             backup.renameTo(viejo);
             parent.actualizando = false;
             parent.jButton1.setEnabled(true);
+            parent.jLabel3.setText("Actualizado");
             parent.jButton1.setText("Re-Actualizar");
         }
         parent.actualizando = false;
