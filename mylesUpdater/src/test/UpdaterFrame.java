@@ -8,17 +8,21 @@
  *
  * Created on 21-oct-2009, 17:37:53
  */
-
 package test;
+
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author Juankar
  */
 public class UpdaterFrame extends javax.swing.JFrame {
+
     boolean actualizando = false;
     String version;
     int jprogreso;
     Download dl = new Download("http://juankar.com/myles/myles.pdf", "tmp.pdf", this);
+
     /** Creates new form UpdaterFrame */
     public UpdaterFrame() {
         initComponents();
@@ -196,7 +200,7 @@ public class UpdaterFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_startUpdate
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        if(!actualizando){
+        if (!actualizando) {
 
             actualizando = true;
             jButton1.setText("Cancelar");
@@ -209,17 +213,18 @@ public class UpdaterFrame extends javax.swing.JFrame {
              */
             dl.stop();
             jButton1.setEnabled(true);
+            log("Cancelado por el usuario");
             jButton1.setText("Actualizar");
             jProgressBar1.setString("Cancelado");
             jProgressBar1.setValue(0);
-            actualizando=false;
-            dl=null;
+            actualizando = false;
+            dl = null;
             System.gc();    //Recolector de basura.
+            JOptionPane.showMessageDialog(this, "Cancelado por el usuario", "Error", 0);
             dl = new Download("http://juankar.com/myles/myles.pdf", "tmp.pdf", this);
-            jTextArea1.setText("Actualización cancelada por el usuario\n" +
-                    "-------------------------------------\nBienvenido a Myles Updater:\n--------------------------------------------------------------------------------");
+            jTextArea1.setText("Bienvenido a Myles Updater:\n--------------------------------------------------------------------------------");
             jLabel3.setText("Cancelado");
-            
+
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 
@@ -234,28 +239,29 @@ public class UpdaterFrame extends javax.swing.JFrame {
 }//GEN-LAST:event_about
 
     /**
-    * @param args the command line arguments
-    */
+     * @param args the command line arguments
+     */
     public static void main(String args[]) {
 
         java.awt.EventQueue.invokeLater(new Runnable() {
+
             public void run() {
                 new UpdaterFrame().setVisible(true);
+
             }
         });
     }
-    public void setProgress1(int amonto,String velocidad){
+
+    public void setProgress1(int amonto, String velocidad) {
         jProgressBar1.setValue(amonto);
-        jProgressBar1.setString("Progreso: "+amonto+"%. Velocidad: "+velocidad);
-        if (amonto==100){
+        jProgressBar1.setString("Progreso: " + amonto + "%. Velocidad: " + velocidad);
+        if (amonto == 100) {
             jProgressBar1.setString("Actualización competada");
-            dl=null;
+            dl = null;
             System.gc();    //Recolector de basura.
             dl = new Download("http://juankar.com/myles/myles.pdf", "tmp.pdf", this);
         }
     }
-
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
@@ -274,7 +280,7 @@ public class UpdaterFrame extends javax.swing.JFrame {
     public javax.swing.JTextArea jTextArea1;
     // End of variables declaration//GEN-END:variables
 
-    public void log(String msg){
-        jTextArea1.append("\n"+msg);
+    public void log(String msg) {
+        jTextArea1.append("\n" + msg);
     }
 }
