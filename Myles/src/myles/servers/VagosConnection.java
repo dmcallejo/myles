@@ -41,6 +41,10 @@ public class VagosConnection implements ServerConnection {
      * Metodo constructor de la clase (OFICIAL), que contiene un atributo objeto
      * serverInfo con toda la info del servidor.
      */
+
+
+
+
     public VagosConnection(Element data) {
         this.vagos_user = data.getChildText("user");
         this.vagos_password = data.getChildText("encpass");
