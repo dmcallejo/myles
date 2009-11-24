@@ -1,6 +1,5 @@
 package myles.utils;
 
-import java.io.BufferedReader;
 import java.io.*;
 import java.net.*;
 import java.util.logging.Level;
@@ -70,7 +69,7 @@ public class HttpUtils {
     }
 
     public static String getText(String fileURL) throws java.net.MalformedURLException, java.io.IOException {
-        // Url con la foto
+        // Url con la foto de mi polla en moto
         URL url = new URL(fileURL);
 
         // establecemos conexion
