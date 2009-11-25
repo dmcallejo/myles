@@ -179,6 +179,8 @@ public class VagosConnection implements ServerConnection {
      */
     @Override
     public SearchResult search(String search_query, int[] servers) throws MalformedURLException, IOException, NoSuchAlgorithmException {
+        int totalResults=0;
+        int pages=0;
         // Construimos objeto HTTPUrlConnection con la pÃ¡gina de Login
         URL vagos_search_url = new URL("http://www.vagos.es/search.php?do=process");
         HttpURLConnection vagos_search = (HttpURLConnection) vagos_search_url.openConnection();
@@ -217,6 +219,12 @@ public class VagosConnection implements ServerConnection {
         String line, search_html = "";
         line = search_reader.readLine();
         while (line != null) {
+            if(line.contains("<span class=\"smallfont\" title=\"Mostrando resultados del")){
+                totalResults=Integer.parseInt(line.split("de ")[1].split("\">")[0]);
+            }
+            if(line.contains("<td class=\"vbmenu_control\" style=\"font-weight:normal\">P")){
+                pages=Integer.parseInt(line.split("de ")[1].split("<")[0]);
+            }
             if (line.contains("<td class=\"tfoot\" ")) {
                 break;
             }
@@ -237,7 +245,7 @@ public class VagosConnection implements ServerConnection {
             LinkedList<Result> r = getResult(id, title, servers);
             results.addAll(r);
         }
-        return new SearchResult(search_query, servers, results);
+        return new SearchResult(search_query, servers, results,totalResults,pages);
 
 
     }
