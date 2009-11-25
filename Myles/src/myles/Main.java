@@ -15,7 +15,7 @@ public class Main {
     public static void main(String[] args){
         try {
             WebUpdate upd = new WebUpdate();
-            System.exit(0);
+            //System.exit(0);
             LinkedList<Element> logins = Config.getLoginInfo();
             Element log = logins.getLast();
             VagosConnection v1 = new VagosConnection(log.getChildText("user"),log.getChildText("encpass"), "1");
