@@ -16,15 +16,17 @@ import myles.servers.DlServer;
 public class SearchResult {
 
     private String name;
+    private String searchURL;
     private int[] servers;
     private String date;
     private LinkedList<Result> results;
     private int pages;
     private int totalResults;
 
-    public SearchResult(String name, int[] servers, LinkedList<Result> results, int totalResults, int pages) {
+    public SearchResult(String name, String searchURL, int[] servers, LinkedList<Result> results, int totalResults, int pages) {
         this.name = name;
         this.servers = servers;
+        this.searchURL=searchURL;
         this.results = results;
         java.util.Date date = new java.util.Date();
         java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("k:mm dd/MM/yyyy");
