@@ -41,10 +41,6 @@ public class VagosConnection implements ServerConnection {
      * Metodo constructor de la clase (OFICIAL), que contiene un atributo objeto
      * serverInfo con toda la info del servidor.
      */
-
-
-
-
     public VagosConnection(Element data) {
         this.vagos_user = data.getChildText("user");
         this.vagos_password = data.getChildText("encpass");
@@ -179,8 +175,8 @@ public class VagosConnection implements ServerConnection {
      */
     @Override
     public SearchResult search(String search_query, int[] servers) throws MalformedURLException, IOException, NoSuchAlgorithmException {
-        int totalResults=0;
-        int pages=0;
+        int totalResults = 0;
+        int pages = 0;
         // Construimos objeto HTTPUrlConnection con la pÃ¡gina de Login
         URL vagos_search_url = new URL("http://www.vagos.es/search.php?do=process");
         HttpURLConnection vagos_search = (HttpURLConnection) vagos_search_url.openConnection();
@@ -221,12 +217,12 @@ public class VagosConnection implements ServerConnection {
         line = search_reader.readLine();
         while (line != null) {
             //Número de resultados
-            if(line.contains("<span class=\"smallfont\" title=\"Mostrando resultados del")){
-                totalResults=Integer.parseInt(line.split("de ")[1].split("\">")[0]);
+            if (line.contains("<span class=\"smallfont\" title=\"Mostrando resultados del")) {
+                totalResults = Integer.parseInt(line.split("de ")[1].split("\">")[0]);
             }
             //Número de páginas
-            if(line.contains("<td class=\"vbmenu_control\" style=\"font-weight:normal\">P")){
-                pages=Integer.parseInt(line.split("de ")[1].split("<")[0]);
+            if (line.contains("<td class=\"vbmenu_control\" style=\"font-weight:normal\">P")) {
+                pages = Integer.parseInt(line.split("de ")[1].split("<")[0]);
             }
             //Final del html que nos sirve.
             if (line.contains("<td class=\"tfoot\" ")) {
@@ -240,7 +236,7 @@ public class VagosConnection implements ServerConnection {
          */
         //extendedSearch(vagos_search.getURL().getFile(),0,servers);
 
-        
+
         // Empecemos a buscar resultados
         String[] slices = search_html.split("id=\"thread_title_");
         LinkedList<Result> results = new LinkedList<Result>();
@@ -255,41 +251,47 @@ public class VagosConnection implements ServerConnection {
             results.addAll(r);
         }
         System.out.println(vagos_search.getURL().getFile());
-        return new SearchResult(search_query, vagos_search.getURL().getFile(), servers, results,totalResults,pages);
+        return new SearchResult(search_query, vagos_search.getURL().getFile(), servers, results, totalResults, pages);
 
 
     }
 
-    public LinkedList<Result> extendedSearch(String searchURL, int pages, int[] servers)throws MalformedURLException, IOException {
-        URL extendedURL = new URL("http://www.vagos.es"+searchURL+"&pp=25&page=2");
-        HttpURLConnection conn = (HttpURLConnection)extendedURL.openConnection();
-        conn = HttpUtils.setHeaders("www.vagos.es", conn);
-        conn.addRequestProperty("Cookie", vagos_cookies);
-        conn.addRequestProperty("Referer", "http://www.vagos.es"+searchURL);
-        conn.setRequestMethod("GET");
-        BufferedReader search_reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-        String line, search_html = "";
-        line = search_reader.readLine();
-        while (line != null) {
-            search_html += line;
-            line = search_reader.readLine();
-                        //Final del html que nos sirve.
-            if (line.contains("<td class=\"tfoot\" ")) {
-                break;
-            }
-        }
-        // Empecemos a buscar resultados
-        String[] slices = search_html.split("id=\"thread_title_");
+    public LinkedList<Result> extendedSearch(String searchURL, int pages, int[] servers) throws MalformedURLException, IOException {
+        int pageCounter = 1;
         LinkedList<Result> results = new LinkedList<Result>();
-        System.out.println("Buscamos Resultados...");
-        for (int i = 1; i < slices.length; i++) {
-            String title = slices[i].split("\">")[1];
-            String id = slices[i].split("\">")[0];
-            title = title.split("</a>")[0];
-            id = id.split("\" ")[0];
-            slices[i] = slices[i].split("\" style")[0];
-            LinkedList<Result> r = getResult(id, title, servers);
-            results.addAll(r);
+        while (pageCounter < pages) {
+            pageCounter++;
+            URL extendedURL = new URL("http://www.vagos.es" + searchURL + "&pp=25&page=" + pageCounter);
+            HttpURLConnection conn = (HttpURLConnection) extendedURL.openConnection();
+            conn = HttpUtils.setHeaders("www.vagos.es", conn);
+            conn.addRequestProperty("Cookie", vagos_cookies);
+            conn.addRequestProperty("Referer", "http://www.vagos.es" + searchURL);
+            conn.setRequestMethod("GET");
+            BufferedReader search_reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            String line, search_html = "";
+            line = search_reader.readLine();
+            while (line != null) {
+                search_html += line;
+                line = search_reader.readLine();
+                //Final del html que nos sirve.
+                if (line.contains("<td class=\"tfoot\" ")) {
+                    break;
+                }
+            }
+            // Empecemos a buscar resultados
+            String[] slices = search_html.split("id=\"thread_title_");
+
+            System.out.println("Buscamos Resultados...");
+            for (int i = 1; i < slices.length; i++) {
+                String title = slices[i].split("\">")[1];
+                String id = slices[i].split("\">")[0];
+                title = title.split("</a>")[0];
+                id = id.split("\" ")[0];
+                slices[i] = slices[i].split("\" style")[0];
+                LinkedList<Result> r = getResult(id, title, servers);
+                results.addAll(r);
+            }
+
         }
         return results;
     }
@@ -344,8 +346,6 @@ public class VagosConnection implements ServerConnection {
         System.out.println(tHash[0]);
         return tHash[0];
     }
-
-    
 
     /**
      *
