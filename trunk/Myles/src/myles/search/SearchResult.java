@@ -138,4 +138,16 @@ public class SearchResult {
     public int numResults() {
         return this.results.size();
     }
+
+    public int totalResults(){
+        return this.totalResults;
+    }
+
+    public int pages(){
+        return this.pages;
+    }
+
+    public String searchURL(){
+        return this.searchURL;
+    }
 }
