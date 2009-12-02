@@ -223,6 +223,7 @@ public class VagosConnection implements ServerConnection {
             //Número de páginas
             if (line.contains("<td class=\"vbmenu_control\" style=\"font-weight:normal\">P")) {
                 pages = Integer.parseInt(line.split("de ")[1].split("<")[0]);
+                System.out.println("Páginas: "+pages);
             }
             //Final del html que nos sirve.
             if (line.contains("<td class=\"tfoot\" ")) {
@@ -257,10 +258,12 @@ public class VagosConnection implements ServerConnection {
     }
 
     public LinkedList<Result> extendedSearch(String searchURL, int pages, int[] servers) throws MalformedURLException, IOException {
+        System.out.println("\nExtended Search:\n------------------------\n");
         int pageCounter = 1;
         LinkedList<Result> results = new LinkedList<Result>();
         while (pageCounter < pages) {
             pageCounter++;
+            System.out.println("Página: "+pageCounter);
             URL extendedURL = new URL("http://www.vagos.es" + searchURL + "&pp=25&page=" + pageCounter);
             HttpURLConnection conn = (HttpURLConnection) extendedURL.openConnection();
             conn = HttpUtils.setHeaders("www.vagos.es", conn);
