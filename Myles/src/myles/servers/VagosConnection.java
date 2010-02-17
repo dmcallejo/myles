@@ -223,7 +223,7 @@ public class VagosConnection implements ServerConnection {
             //Número de páginas
             if (line.contains("<td class=\"vbmenu_control\" style=\"font-weight:normal\">P")) {
                 pages = Integer.parseInt(line.split("de ")[1].split("<")[0]);
-                System.out.println("Páginas: "+pages);
+                System.out.println("Páginas: " + pages);
             }
             //Final del html que nos sirve.
             if (line.contains("<td class=\"tfoot\" ")) {
@@ -257,13 +257,41 @@ public class VagosConnection implements ServerConnection {
 
     }
 
+    /**
+     * Extiende la búsqueda en x páginas, añadiendo los nuevos links y el numero de páginas buscadas
+     * al SearchResult original.
+     * @param cliente SearchResult original
+     * @param pages paginas nuevas a buscar
+     * @return Se puede extender o no se puede extender.
+     * @throws IOException problemas de conexión
+     */
+    public boolean extendSearch(SearchResult cliente, int pages) throws IOException {
+        if (cliente.totalPages() == cliente.pages()) {
+            return false;
+        }
+        try {
+            cliente.addResultList(extendedSearch(cliente.searchURL(), pages, cliente.servers()), pages);
+        } catch (MalformedURLException e) {
+        }
+        return true;
+    }
+
+    /**
+     * Modificar para que se haga la búsqueda de x pages mas que las que hay.
+     * @param searchURL
+     * @param pages
+     * @param servers
+     * @return
+     * @throws MalformedURLException
+     * @throws IOException
+     */
     public LinkedList<Result> extendedSearch(String searchURL, int pages, int[] servers) throws MalformedURLException, IOException {
         System.out.println("\nExtended Search:\n------------------------\n");
         int pageCounter = 1;
         LinkedList<Result> results = new LinkedList<Result>();
         while (pageCounter < pages) {
             pageCounter++;
-            System.out.println("Página: "+pageCounter);
+            System.out.println("Página: " + pageCounter);
             URL extendedURL = new URL("http://www.vagos.es" + searchURL + "&pp=25&page=" + pageCounter);
             HttpURLConnection conn = (HttpURLConnection) extendedURL.openConnection();
             conn = HttpUtils.setHeaders("www.vagos.es", conn);

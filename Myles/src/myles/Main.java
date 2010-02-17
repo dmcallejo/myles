@@ -25,10 +25,10 @@ public class Main {
             v1.connect();
             System.out.println("Hemos conectado? " + v1.is_connected() + " " + v1.user());
             SearchResult res = v1.search("prototype", servers);
-            System.out.println("Url de búsqueda: " + res.searchURL());
-            System.out.println("Nombre de la búsqueda: "+res.name());
-            System.out.println("Páginas: "+res.pages());
-            //v1.extendedSearch(res.searchURL(),res.pages(),res.servers());
+            System.out.println(res.totalPages()+"\n@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+            //v1.extendedSearch(res.searchURL(),res.totalPages(),res.servers());
+            v1.extendSearch(res, 1);
+            System.out.println(res.pages());
 
 
 
