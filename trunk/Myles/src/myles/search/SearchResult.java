@@ -21,9 +21,10 @@ public class SearchResult {
     private String date;
     private LinkedList<Result> results;
     private int pages;
+    private int totalPages;
     private int totalResults;
 
-    public SearchResult(String name, String searchURL, int[] servers, LinkedList<Result> results, int totalResults, int pages) {
+    public SearchResult(String name, String searchURL, int[] servers, LinkedList<Result> results, int totalResults, int totalPages) {
         this.name = name;
         this.servers = servers;
         this.searchURL=searchURL;
@@ -31,8 +32,9 @@ public class SearchResult {
         java.util.Date date = new java.util.Date();
         java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("k:mm dd/MM/yyyy");
         this.date = sdf.format(date);
-        this.pages=pages;
+        this.totalPages=totalPages;
         this.totalResults=totalResults;
+        this.pages=1;
     }
 
     /**
@@ -41,6 +43,15 @@ public class SearchResult {
      */
     public void addResult(Result r) {
         results.add(r);
+    }
+
+    /**
+     * Añade una lista a los resultados. Para Extended Search
+     * @param list
+     */
+    public void addResultList(LinkedList<Result> list, int newPages){
+        this.results.addAll(list);
+        this.pages+=newPages;
     }
 
     /**
@@ -145,6 +156,10 @@ public class SearchResult {
 
     public int pages(){
         return this.pages;
+    }
+
+    public int totalPages(){
+        return this.totalPages;
     }
 
     public String searchURL(){
