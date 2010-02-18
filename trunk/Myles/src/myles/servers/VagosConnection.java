@@ -258,19 +258,19 @@ public class VagosConnection implements ServerConnection {
     }
 
     /**
-     * Extiende la búsqueda en x páginas, añadiendo los nuevos links y el numero de páginas buscadas
+     * Extiende la búsqueda en dos páginas mas, añadiendo los nuevos links y el numero de páginas buscadas
      * al SearchResult original.
      * @param cliente SearchResult original
-     * @param pages paginas nuevas a buscar
+     * @param page pagina hasta la que buscar
      * @return Se puede extender o no se puede extender.
      * @throws IOException problemas de conexión
      */
-    public boolean extendSearch(SearchResult cliente, int pages) throws IOException {
-        if (cliente.totalPages() == cliente.pages()) {
+    public boolean extendSearch(SearchResult cliente) throws IOException {
+        if (cliente.totalPages() <= cliente.pages()) {
             return false;
         }
         try {
-            cliente.addResultList(extendedSearch(cliente.searchURL(), pages, cliente.servers()), pages);
+            cliente.addResultList(extendedSearch(cliente.searchURL(), 2,cliente.pages(), cliente.servers()), 2);
         } catch (MalformedURLException e) {
         }
         return true;
@@ -285,11 +285,11 @@ public class VagosConnection implements ServerConnection {
      * @throws MalformedURLException
      * @throws IOException
      */
-    public LinkedList<Result> extendedSearch(String searchURL, int pages, int[] servers) throws MalformedURLException, IOException {
+    public LinkedList<Result> extendedSearch(String searchURL, int newPages,int searchedPages, int[] servers) throws MalformedURLException, IOException {
         System.out.println("\nExtended Search:\n------------------------\n");
-        int pageCounter = 1;
+        int pageCounter = searchedPages;
         LinkedList<Result> results = new LinkedList<Result>();
-        while (pageCounter < pages) {
+        while ((pageCounter<(searchedPages+newPages))  ) {
             pageCounter++;
             System.out.println("Página: " + pageCounter);
             URL extendedURL = new URL("http://www.vagos.es" + searchURL + "&pp=25&page=" + pageCounter);

@@ -27,7 +27,8 @@ public class Main {
             SearchResult res = v1.search("prototype", servers);
             System.out.println(res.totalPages()+"\n@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
             //v1.extendedSearch(res.searchURL(),res.totalPages(),res.servers());
-            v1.extendSearch(res, 1);
+            System.out.println(v1.extendSearch(res));
+            System.out.println(v1.extendSearch(res));
             System.out.println(res.pages());
 
 
