@@ -11,15 +11,15 @@ package myles.search;
  */
 public class Link {
     // Atributos
-    private int serverId;
+    private int hostingId;
     private String linkURL;
 
-    public Link(int serverId, String linkURL){
-        this.serverId = serverId;
-        this.linkURL = linkURL;
+    public Link(int hostingId, String linkURL){
+        this.hostingId = hostingId;   // Hosting server´s ID
+        this.linkURL = linkURL;       // The proper link's URL value
     }
 
     // Observadores (getters)
-    public int getServerId(){ return serverId; }
+    public int getServerId(){ return hostingId; }
     public String getLinkURL(){ return linkURL; }
 }

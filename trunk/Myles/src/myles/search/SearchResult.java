@@ -15,23 +15,33 @@ import myles.servers.DlServer;
  */
 public class SearchResult {
 
-    private String name;
-    private String searchURL;
-    private int[] servers;
-    private String date;
-    private LinkedList<Result> results;
-    private int pages;
-    private int totalPages;
-    private int totalResults;
+    private String searchQuery;         // The text the user was looking for
+    private String searchURL;           // The URL composed for the search
+    private int[] servers;              // An array of server id's allowed to
+                                        // be processed and shown.
+    private String date;                // The date of the Search ¿?¿?
+    private LinkedList<Result> results; // A list with all the results
+    private int pages;                  // Number of result pages
+    private int totalPages;             // Total result pages
+    private int totalResults;           // Total results
 
-    public SearchResult(String name, String searchURL, int[] servers, LinkedList<Result> results, int totalResults, int totalPages) {
-        this.name = name;
+    /**
+     * Only class constructor, required params:
+     * @param searchQuery
+     * @param searchURL
+     * @param servers
+     * @param results
+     * @param totalResults
+     * @param totalPages
+     */
+    public SearchResult(String searchQuery, String searchURL, int[] servers, LinkedList<Result> results, int totalResults, int totalPages) {
+        this.searchQuery = searchQuery;
         this.servers = servers;
         this.searchURL=searchURL;
         this.results = results;
-        java.util.Date date = new java.util.Date();
+        java.util.Date Date = new java.util.Date();
         java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("k:mm dd/MM/yyyy");
-        this.date = sdf.format(date);
+        this.date = sdf.format(Date);
         this.totalPages=totalPages;
         this.totalResults=totalResults;
         this.pages=1;
@@ -57,41 +67,51 @@ public class SearchResult {
     /**
      * Parsea el html del post 
      * 
-     * @param html_code
+     * @param htmlCode
      * @param name
      * @param servers
      * @return
      */
-    public static LinkedList<Result> parseLinks(String html_code, String title, int[] servers, String url) {
-        System.out.println("Comienza el parseo de links...");
-        LinkedList<String> cmp_unique;
-        String aux_url;
-        html_code = html_code.replaceAll(" ", "þ");
-        html_code = html_code.replaceAll(">", "þ");
-        html_code = html_code.replaceAll("<", "þ");
-        html_code = html_code.replaceAll("\"", "þ");
-        html_code = html_code.replaceAll("'", "þ");
-        html_code = html_code.replaceAll("\n", "þ");
+    public static LinkedList<Result> parseLinks(String htmlCode, String title, int[] servers, String url) {
+        System.out.println("Comienza el parseo de links...");                   //@Debug
+        LinkedList<String> uniqueComparing;
+        String auxUrl;
+        /**
+         * Vamos a cambiar todas las ocurrencias de caracteres que puedan ser de formato y no de
+         * información por un caracter poco usado y reconocible.
+         */
+        htmlCode = htmlCode.replaceAll(" ", "þ");
+        htmlCode = htmlCode.replaceAll(">", "þ");
+        htmlCode = htmlCode.replaceAll("<", "þ");
+        htmlCode = htmlCode.replaceAll("\"", "þ");
+        htmlCode = htmlCode.replaceAll("'", "þ");
+        htmlCode = htmlCode.replaceAll("\n", "þ");
         LinkedList<Result> results = new LinkedList();
-        LinkedList<DlServer> pivot_servers = Config.getDlServers();
-        int h = 9999;
+            // This results will store the downloaded results.
+        LinkedList<DlServer> pivotServers = Config.getDlServers();
+        int h = 999;    // Máx. level, just arbitrary
+
+        /**
+         * Check servers included in the result filter
+         */
         if (servers[0] == 0) {
             servers = null;
-            System.out.println("La búsqueda se hará a todos los servidores. "+servers);
+            System.out.println("La búsqueda se hará a todos los servidores. "+servers);     // @Debug
         } else {
             h=servers.length;
         }
+
         int k = 0;
-        Iterator dl_server_iterator = pivot_servers.iterator();
+        Iterator downloadServerIterator = pivotServers.iterator();
         DlServer cur_dl_server;
         String[] sliced_html;
         String cur_url;
-        while (k<h & dl_server_iterator.hasNext()) {
-            cmp_unique = new LinkedList<String>();
-            cur_dl_server = (DlServer) dl_server_iterator.next();
+        while (k<h & downloadServerIterator.hasNext()) {
+            uniqueComparing = new LinkedList<String>();
+            cur_dl_server = (DlServer) downloadServerIterator.next();
             if (servers==null || cur_dl_server.get_id() == servers[k]) {
                 Result tResult = new Result(title,cur_dl_server.get_id(),url);
-                sliced_html = html_code.split(cur_dl_server.get_url());
+                sliced_html = htmlCode.split(cur_dl_server.get_url());
                 for (int i = 1; i < sliced_html.length; i++) {
                     /**
                      * Si el enlace contiene los típicos ... de un enlace abreviado,
@@ -100,11 +120,11 @@ public class SearchResult {
                     if (!sliced_html[i].contains("...")) {
                         cur_url = sliced_html[i];
                         cur_url = cur_url.split("þ")[0];
-                        aux_url = "http://" + cur_dl_server.get_url() + cur_url;
-                        if(!cmp_unique.contains(aux_url)){
-                            System.out.println(aux_url);      //Debug
-                            tResult.addLink(aux_url);
-                            cmp_unique.add(aux_url);
+                        auxUrl = "http://" + cur_dl_server.get_url() + cur_url;
+                        if(!uniqueComparing.contains(auxUrl)){
+                            System.out.println(auxUrl);      //Debug
+                            tResult.addLink(auxUrl);
+                            uniqueComparing.add(auxUrl);
                         }
                         
                     }
@@ -134,8 +154,8 @@ public class SearchResult {
         return this.date;
     }
 
-    public String name() {
-        return this.name;
+    public String searchQuery() {
+        return this.searchQuery;
     }
 
     public int[] servers() {
