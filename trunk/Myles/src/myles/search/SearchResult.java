@@ -15,6 +15,7 @@ import myles.servers.DlServer;
  */
 public class SearchResult {
 
+    private String name;
     private String searchQuery;         // The text the user was looking for
     private String searchURL;           // The URL composed for the search
     private int[] servers;              // An array of server id's allowed to
@@ -41,6 +42,8 @@ public class SearchResult {
         this.results = results;
         java.util.Date Date = new java.util.Date();
         java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("k:mm dd/MM/yyyy");
+        this.date = sdf.format(date);
+        this.totalPages=totalPages;
         this.date = sdf.format(Date);
         this.totalPages=totalPages;
         this.totalResults=totalResults;
